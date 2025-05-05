@@ -11,7 +11,7 @@ class PolicyResponse:
         if not openai_client:
             return "OpenAI API key가 제공되지 않았습니다. 환경 변수 OPENAI_API_KEY를 설정해주세요."
         self.openai_client = openai_client
-        self.company_results = {}
+        self.company_results: dict[str, str] = {}
 
     def extract_company_info(self, search_results: list[dict]) -> str:
 
