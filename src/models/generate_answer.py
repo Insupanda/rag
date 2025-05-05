@@ -9,7 +9,9 @@ from config.settings import settings
 class PolicyResponse:
     def __init__(self, openai_client: str):
         if not openai_client:
-            return "OpenAI API key가 제공되지 않았습니다. 환경 변수 OPENAI_API_KEY를 설정해주세요."
+            raise RuntimeError(
+                "OpenAI API key가 제공되지 않았습니다. 환경 변수 OPENAI_API_KEY를 설정해주세요."
+            )
         self.openai_client = openai_client
         self.company_results: dict[str, str] = {}
 
