@@ -45,7 +45,7 @@ document_3 = Document(page_content="i will be deleted :(")
 
 documents = [document_1, document_2, document_3]
 ids = ["1", "2", "3"]
-abc = vector_store.add_documents(documents=documents, ids=ids)
+# abc = vector_store.add_documents(documents=documents, ids=ids)
 
 
 def add_documents(self, documents: list[Document], **kwargs: Any) -> list[str]:
@@ -237,26 +237,36 @@ def similarity_search_with_score_by_vector(
     return docs[:k]
 
 
-# Search
-results = vector_store.similarity_search(query="thud", k=1)
-# results = similarity_search(query="thud", k=1)
-for doc in results:
-    print(f"* {doc.page_content} [{doc.metadata}]")
+if __name__ == "__main__":
+    document_1 = Document(
+        page_content="foo",
+        metadata={"baz": "bar"},
+    )
+    document_2 = Document(page_content="thud", metadata={"bar": "baz"})
+    document_3 = Document(page_content="i will be deleted :(")
 
+    documents = [document_1, document_2, document_3]
+    ids = ["1", "2", "3"]
 
-# # Search with filter
-# results = vector_store.similarity_search(query="thud", k=1, filter={"bar": "baz"})
-# for doc in results:
-#     print(f"* {doc.page_content} [{doc.metadata}]")
+    # Search
+    # results = vector_store.similarity_search(query="thud", k=1)
+    results = similarity_search(query="thud", k=1)
+    for doc in results:
+        print(f"* {doc.page_content} [{doc.metadata}]")
 
-# # Serach with score
-# results = vector_store.similarity_search_with_score(query="qux", k=1)
-# for doc, score in results:
-#     print(f"* [SIM={score:3f}] {doc.page_content} [{doc.metadata}]")
+    # # Search with filter
+    # results = vector_store.similarity_search(query="thud", k=1, filter={"bar": "baz"})
+    # for doc in results:
+    #     print(f"* {doc.page_content} [{doc.metadata}]")
 
-# # Use as Retriever
-# retriever = vector_store.as_retriever(
-#     search_type="mmr",
-#     search_kwargs={"k": 1, "fetch_k": 2, "lambda_mult": 0.5},
-# )
-# retriever.invoke("thud")
+    # # Serach with score
+    # results = vector_store.similarity_search_with_score(query="qux", k=1)
+    # for doc, score in results:
+    #     print(f"* [SIM={score:3f}] {doc.page_content} [{doc.metadata}]")
+
+    # # Use as Retriever
+    # retriever = vector_store.as_retriever(
+    #     search_type="mmr",
+    #     search_kwargs={"k": 1, "fetch_k": 2, "lambda_mult": 0.5},
+    # )
+    # retriever.invoke("thud")
