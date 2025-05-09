@@ -1,7 +1,7 @@
 import re
 import copy
 
-from config.settings import Settings
+from config.settings import Settings, UserState, user_state
 from options.enums import Sex
 
 from openai import OpenAI
@@ -11,35 +11,35 @@ load_dotenv()
 openai_client = OpenAI()
 
 
-def process_query(prompt: str, config: Settings):
+def process_query(prompt: str, user_state: UserState):
     # dataclass 인스턴스 복사 (얕은 복사)
-    current_config = copy.copy(config)
+    current_state = copy.copy(user_state)
 
     # 나이 추출 (숫자 + "세" 패턴)
     age_match = re.search(r"(\d+)세", prompt)
     if age_match:
-        current_config.insu_age = int(age_match.group(1))
+        current_state.insu_age = int(age_match.group(1))
 
     # 성별 추출
     if "남성" in prompt or "남자" in prompt:
-        current_config.sex = Sex.MALE
+        current_state.insu_sex = Sex.MALE
     elif "여성" in prompt or "여자" in prompt:
-        current_config.sex = Sex.FEMALE
+        current_state.insu_sex = Sex.FEMALE
 
     # 상품유형 추출
     if "무해지" in prompt:
-        current_config.product_type = "nr"
+        current_state.product_type = "nr"
     elif "해지환급" in prompt:
-        current_config.product_type = "r"
+        current_state.product_type = "r"
 
     # 보험기간 추출
     period_match = re.search(r"(\d+)년[/\s](\d+)세", prompt)
     if period_match:
         years = period_match.group(1)
         age = period_match.group(2)
-        current_config.expiry_year = f"{years}y_{age}"
+        current_state.expiry_year = f"{years}y_{age}"
 
-    return prompt, current_config
+    return prompt, current_state
 
 
 def find_matching_collections(question, available_collections):

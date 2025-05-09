@@ -1,7 +1,7 @@
 import os
 from abc import ABC, abstractmethod
 
-from config.settings import Settings, settings
+from config.settings import Settings, settings, UserState, user_state
 from util.utils import process_query, find_matching_collections
 from models.search import search
 from models.collection_loader import CollectionLoader
@@ -51,10 +51,10 @@ class CompareHandler(Handler):
         template_manager: TemplateManager,
         execute_query: QueryExecutor,
         sql_generator: SQLGenerator,
-        settings: Settings = settings,
+        user_state: UserState = user_state,
     ):
         super().__init__(openai_client, template_manager)
-        self.settings = settings
+        self.user_state = user_state
         self.sql_generator = sql_generator
         self.execute_query = execute_query
 
@@ -62,12 +62,12 @@ class CompareHandler(Handler):
         print(repr(settings))
 
     def handle(self, user_input: str) -> str:
-        prompt, current_settings = process_query(user_input, self.settings)
-        self.settings = current_settings
-        generated_sql = self.sql_generator.generate(prompt, self.settings)
-        self.print_settings(self.settings)
+        prompt, curr_user_state = process_query(user_input, self.user_state)
+        self.user_state = curr_user_state
+        generated_sql = self.sql_generator.generate(prompt, self.user_state)
+        self.print_settings(self.user_state)
         search_result = self.execute_query.execute_sql_query(
-            generated_sql, self.settings
+            generated_sql, self.user_state
         )
         return search_result
 

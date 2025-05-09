@@ -1,4 +1,4 @@
-from config.settings import Settings, settings
+from config.settings import Settings, settings, UserState, user_state
 from db.schema import DB_SCHEMA
 from options.enums import Sex
 
@@ -101,15 +101,15 @@ class SQLGenerator:
         )
         return response
 
-    def generate(self, prompt: str, config: Settings) -> str:
+    def generate(self, prompt: str, user_state: UserState) -> str:
         self.generate_sql_system_prompt = self.template_manager.render(
             "base_prompt.jinja2",
             schema=DB_SCHEMA,
-            age=config.insu_age,
-            sex_num=config.sex,
-            sex="남자" if config.sex == Sex.MALE else "여자",
-            product_type=config.product_type,
-            expiry_year=config.expiry_year,
+            age=user_state.insu_age,
+            sex_num=user_state.insu_sex,
+            sex="남자" if user_state.insu_sex == Sex.MALE else "여자",
+            product_type=user_state.product_type,
+            expiry_year=user_state.expiry_year,
         )
         model = self.model(prompt)
         sql_query = model.choices[0].message.content.strip()
@@ -121,7 +121,7 @@ class QueryExecutor:
         self.db_client = DatabaseClient()
         self.json_converter = JSONConverter(openai_client, template_manager)
 
-    def execute_sql_query(self, generated_sql: str, used_config: Settings) -> str:
+    def execute_sql_query(self, generated_sql: str, used_config: UserState) -> str:
         results = self.db_client.execute_query(generated_sql)
         print("\n[검색 결과]")
         if results:
