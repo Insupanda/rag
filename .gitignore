@@ -1,5 +1,6 @@
 src/insu_data/*
 files/*
+study/*
 .env
 
 # Byte-compiled / optimized / DLL files
