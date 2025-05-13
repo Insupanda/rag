@@ -28,5 +28,5 @@ class ModelType(StrEnum):
 
 
 CompanyName = str
-CompanyRestrictionsText = str
-CompanyNameRestrictionsTextPair = dict[CompanyName, CompanyRestrictionsText]
+CompanyRelevanceText = str
+CompanyNameRelevanceTextPair = dict[CompanyName, CompanyRelevanceText]

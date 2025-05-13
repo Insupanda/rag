@@ -5,7 +5,7 @@ from langchain_core.runnables import Runnable
 from langchain_core.output_parsers import StrOutputParser
 
 from config.settings import settings
-from options.enums import CompanyNameRestrictionsTextPair
+from options.enums import CompanyNameRelevanceTextPair
 
 
 class PolicyResponse:
@@ -15,7 +15,7 @@ class PolicyResponse:
                 "OpenAI API key가 제공되지 않았습니다. OPENAI_API_KEY를 설정해주세요."
             )
         self.openai_client = openai_client
-        self.company_results: CompanyNameRestrictionsTextPair = {}
+        self.company_results: CompanyNameRelevanceTextPair = {}
 
     def extract_company_info(self, search_results: list[dict]) -> str:
 
@@ -27,6 +27,8 @@ class PolicyResponse:
 
         context = ""
         for company, results in self.company_results.items():
+            print("ccc", company)
+            print("rrrr", results)
             company_context = ""
             if self.multiple_companies:
                 company_context += f"\n\n## {company} 정보:\n"
