@@ -23,6 +23,5 @@ jobs:
           VALIDATE_PYTHON_PYLINT: true
 
           VALIDATE_ALL_CODEBASE: false
-          VALIDATE_GITLEAKS: false
           DEFAULT_BRANCH: "main"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
