@@ -22,13 +22,9 @@ class PolicyResponse:
         for result in search_results:
             collection_name = result.get("collection", "")
             self.company_results.setdefault(collection_name, []).append(result)
-
         self.multiple_companies = len(self.company_results) > 1
-
         context = ""
         for company, results in self.company_results.items():
-            print("ccc", company)
-            print("rrrr", results)
             company_context = ""
             if self.multiple_companies:
                 company_context += f"\n\n## {company} 정보:\n"
