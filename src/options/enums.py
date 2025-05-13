@@ -25,3 +25,8 @@ class ConversationFlow(StrEnum):
 
 class ModelType(StrEnum):
     INTENT_MODEL = "gpt-4-turbo"
+
+
+CompanyName = str
+CompanyRestrictionsText = str
+CompanyNameRestrictionsTextPair = dict[CompanyName, CompanyRestrictionsText]
