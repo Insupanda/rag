@@ -4,6 +4,7 @@ from options.enums import Sex
 
 import simplejson as json
 import mysql.connector
+from dataclasses import asdict
 from jinja2 import Environment, FileSystemLoader
 
 
@@ -128,7 +129,7 @@ class QueryExecutor:
             print(f"전체 결과 수: {len(results)}개")
             # 검색 결과와 설정값을 함께 딕셔너리로 구성
             temp_data = {
-                "설정값": used_config.model_dump(),
+                "설정값": asdict(used_config),
                 "쿼리": generated_sql,
                 "결과": results,  # 각 행은 이미 딕셔너리 형태임
             }

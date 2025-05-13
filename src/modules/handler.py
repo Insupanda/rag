@@ -58,8 +58,8 @@ class CompareHandler(Handler):
         self.sql_generator = sql_generator
         self.execute_query = execute_query
 
-    def print_settings(self, settings: Settings) -> None:
-        print(repr(settings))
+    def print_settings(self, user_state: UserState) -> None:
+        print(repr(user_state))
 
     def handle(self, user_input: str) -> str:
         prompt, curr_user_state = process_query(user_input, self.user_state)
