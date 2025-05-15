@@ -5,7 +5,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
-from options.enums import Sex, ProductType
+from options.enums import ProductType, Sex
 
 
 load_dotenv()
