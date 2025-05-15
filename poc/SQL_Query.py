@@ -8,6 +8,7 @@ import mysql.connector
 import openai
 from dotenv import load_dotenv
 
+
 # 환경 설정
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -17,7 +18,7 @@ DB_CONFIG = {
     "host": "localhost",
     "user": "root",
     "password": "1234",
-    "database": "insu"
+    "database": "insu",
 }
 
 # DB 스키마 정의
@@ -161,150 +162,162 @@ DEFAULT_CONFIG = {
     "sex": 1,  # 1: 남자, 0: 여자
     "product_type": "nr",  # nr: 무해지형, r: 해지환급형
     "expiry_year": "20y_100",
-    "company_id": None  # None으로 설정하여 기본값 지정
+    "company_id": None,  # None으로 설정하여 기본값 지정
 }
+
 
 def execute_sql_query(query: str, used_config: dict) -> Optional[list]:
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor(dictionary=True)
-        
+
         # 설정값과 쿼리 출력
         print("\n=== 실행 결과 ===")
         print("\n[설정값]")
         print(f"이름: {used_config['custom_name']}")
         print(f"나이: {used_config['insu_age']}세")
         print(f"성별: {'남자' if used_config['sex'] == 1 else '여자'}")
-        print(f"상품유형: {'무해지형' if used_config['product_type'] == 'nr' else '해지환급형'}")
+        print(
+            f"상품유형: {'무해지형' if used_config['product_type'] == 'nr' else '해지환급형'}"
+        )
         print(f"보험기간: {used_config['expiry_year']}")
-        print(f"보험사ID: {used_config['company_id'] if used_config['company_id'] else '지정되지 않음'}")
-        
+        print(
+            f"보험사ID: {used_config['company_id'] if used_config['company_id'] else '지정되지 않음'}"
+        )
+
         print("\n[실행 쿼리]")
         print(query)
-        
+
         # 쿼리 실행
         cursor.execute(query)
         results = cursor.fetchall()
-        
+
         print("\n[검색 결과]")
         if results:
             print(f"전체 결과 수: {len(results)}개")
-            
+
             # query_results 디렉토리 생성
-            os.makedirs('query_results', exist_ok=True)
-            
+            os.makedirs("query_results", exist_ok=True)
+
             # 원본 결과를 임시 파일로 저장
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            temp_filename = f'query_results/temp_result_{timestamp}.json'
-            
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            temp_filename = f"query_results/temp_result_{timestamp}.json"
+
             # 결과를 그대로 저장 (JSON 변환 없이)
             temp_data = {
                 "설정값": used_config,
                 "쿼리": query,
-                "결과": [dict(row) for row in results]  # SQL 결과를 그대로 딕셔너리로 변환
+                "결과": [
+                    dict(row) for row in results
+                ],  # SQL 결과를 그대로 딕셔너리로 변환
             }
-            
-            with open(temp_filename, 'w', encoding='utf-8') as f:
+
+            with open(temp_filename, "w", encoding="utf-8") as f:
                 json.dump(temp_data, f, ensure_ascii=False, indent=2, default=str)
-            
+
             print("\n임시 파일이 생성되었습니다:", temp_filename)
-            
+
             # 결과 출력 (처음 20개만)
             for idx, row in enumerate(results[:20], 1):
                 print(f"\n결과 {idx}:")
                 for key, value in row.items():
                     print(f"{key}: {value}")
-            
+
             print("\n2_json_converter.py를 실행하여 최종 JSON을 생성하세요.")
-            
+
         else:
             print("검색 결과가 없습니다.")
-        
+
         cursor.close()
         conn.close()
         return results
-        
+
     except Exception as e:
         print(f"\n❌ SQL 실행 오류: {str(e)}")
         return None
 
-def generate_sql_query(prompt: str, age: int, sex: int, product_type: str, expiry_year: str) -> str:
+
+def generate_sql_query(
+    prompt: str, age: int, sex: int, product_type: str, expiry_year: str
+) -> str:
     try:
         client = openai.OpenAI()
         system_prompt = BASE_PROMPT.format(
             schema=DB_SCHEMA,
             age=age,
             sex_num=sex,
-            sex='남자' if sex == 1 else '여자',
+            sex="남자" if sex == 1 else "여자",
             product_type=product_type,
-            expiry_year=expiry_year
+            expiry_year=expiry_year,
         )
-        
+
         response = client.chat.completions.create(
             model="gpt-4-0125-preview",
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompt}
+                {"role": "user", "content": prompt},
             ],
-            temperature=0
+            temperature=0,
         )
-        
+
         # SQL 쿼리 추출 및 정제
         sql_query = response.choices[0].message.content.strip()
-        
+
         # 마크다운 코드 블록 제거
-        sql_query = sql_query.replace('```sql', '').replace('```', '').strip()
-        
+        sql_query = sql_query.replace("```sql", "").replace("```", "").strip()
+
         return sql_query
     except Exception as e:
         print(f"\n❌ GPT API 오류: {str(e)}")
         return None
 
+
 def process_query(prompt: str):
     # 현재 사용되는 설정값 저장
     current_config = DEFAULT_CONFIG.copy()
-    
+
     # 나이 추출 (숫자 + "세" 패턴)
-    age_match = re.search(r'(\d+)세', prompt)
+    age_match = re.search(r"(\d+)세", prompt)
     if age_match:
         current_config["insu_age"] = int(age_match.group(1))
-    
+
     # 성별 추출
     if "남성" in prompt or "남자" in prompt:
         current_config["sex"] = 1
     elif "여성" in prompt or "여자" in prompt:
         current_config["sex"] = 0
-    
+
     # 상품유형 추출
     if "무해지" in prompt:
         current_config["product_type"] = "nr"
     elif "해지환급" in prompt:
         current_config["product_type"] = "r"
-    
+
     # 보험기간 추출
-    period_match = re.search(r'(\d+)년[/\s](\d+)세', prompt)
+    period_match = re.search(r"(\d+)년[/\s](\d+)세", prompt)
     if period_match:
         years = period_match.group(1)
         age = period_match.group(2)
         current_config["expiry_year"] = f"{years}y_{age}"
-    
+
     # 보험사 추출 (옵션)
     if "삼성" in prompt:
         current_config["company_id"] = "01"
     elif "한화" in prompt:
         current_config["company_id"] = "02"
     # 다른 보험사들에 대한 매핑도 추가 가능
-    
+
     sql_query = generate_sql_query(
         prompt=prompt,
         age=current_config["insu_age"],
         sex=current_config["sex"],
         product_type=current_config["product_type"],
-        expiry_year=current_config["expiry_year"]
+        expiry_year=current_config["expiry_year"],
     )
     if sql_query:
         return execute_sql_query(sql_query, current_config)
     return None
+
 
 def main():
     print("\n=== 보험 상담 챗봇 ===")
@@ -312,22 +325,24 @@ def main():
     print(f"이름: {DEFAULT_CONFIG['custom_name']}")
     print(f"나이: {DEFAULT_CONFIG['insu_age']}세")
     print(f"성별: {'남자' if DEFAULT_CONFIG['sex'] == 1 else '여자'}")
-    print(f"상품유형: {'무해지형' if DEFAULT_CONFIG['product_type'] == 'nr' else '해지환급형'}")
+    print(
+        f"상품유형: {'무해지형' if DEFAULT_CONFIG['product_type'] == 'nr' else '해지환급형'}"
+    )
     print(f"보험기간: {DEFAULT_CONFIG['expiry_year']}")
-    print(f"보험사ID: {DEFAULT_CONFIG['company_id'] if DEFAULT_CONFIG['company_id'] else '지정되지 않음'}")
-    
+    print(
+        f"보험사ID: {DEFAULT_CONFIG['company_id'] if DEFAULT_CONFIG['company_id'] else '지정되지 않음'}"
+    )
+
     while True:
         print("\n질문을 입력하세요 (종료하려면 'q' 또는 'quit' 입력):")
         question = input().strip()
-        
-        if question.lower() in ['q2_llm_to_sql.py', 'quit']:
+
+        if question.lower() in ["q2_llm_to_sql.py", "quit"]:
             print("\n프로그램을 종료합니다.")
             break
-            
+
         process_query(question)
+
 
 if __name__ == "__main__":
     main()
-
-
-

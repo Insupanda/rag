@@ -6,6 +6,7 @@ import threading
 import time
 from datetime import datetime
 
+
 import openai
 from dotenv import load_dotenv
 
@@ -150,9 +151,10 @@ EXAMPLE_PROMPT = """다음은 보험 상담 결과를 JSON 형식으로 변환�
 위 규칙에 따라 다음 데이터를 변환해주세요:
 """
 
+
 class Spinner:
     def __init__(self, message="처리중"):
-        self.spinner = ['⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷']
+        self.spinner = ["⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"]
         self.message = message
         self.busy = False
         self.spinner_visible = False
@@ -160,7 +162,9 @@ class Spinner:
     def write_next(self):
         with self._screen_lock:
             if not self.spinner_visible:
-                sys.stdout.write(f'\r{self.message} {self.spinner[self.spinner_index]} ')
+                sys.stdout.write(
+                    f"\r{self.message} {self.spinner[self.spinner_index]} "
+                )
                 self.spinner_index = (self.spinner_index + 1) % len(self.spinner)
                 sys.stdout.flush()
 
@@ -169,7 +173,7 @@ class Spinner:
         self.busy = True
         self.spinner_index = 0
         self.spinner_visible = True
-        sys.stdout.write(f'\r{self.message} ')
+        sys.stdout.write(f"\r{self.message} ")
         sys.stdout.flush()
         threading.Thread(target=self.spinner_task).start()
         return self
@@ -178,8 +182,8 @@ class Spinner:
         self.busy = False
         time.sleep(0.1)
         with self._screen_lock:
-            sys.stdout.write('\r')
-            sys.stdout.write(f'\r{self.message} 완료!\n')
+            sys.stdout.write("\r")
+            sys.stdout.write(f"\r{self.message} 완료!\n")
             sys.stdout.flush()
 
     def spinner_task(self):
@@ -187,25 +191,26 @@ class Spinner:
             self.write_next()
             time.sleep(0.1)
 
+
 def convert_to_json():
     try:
         print("\n=== JSON 변환 시작 ===")
-        
+
         with Spinner("디렉토리 확인 중"):
-            if not os.path.exists('query_results'):
+            if not os.path.exists("query_results"):
                 print("query_results 디렉토리가 없습니다.")
                 return
 
-            temp_files = glob.glob('query_results/temp_result*.json')
+            temp_files = glob.glob("query_results/temp_result*.json")
             if not temp_files:
                 print("임시 결과 파일을 찾을 수 없습니다.")
                 return
-                
+
             latest_temp_file = max(temp_files, key=os.path.getctime)
-        
+
         with Spinner("임시 파일 읽는 중"):
             try:
-                with open(latest_temp_file, 'r', encoding='utf-8') as f:
+                with open(latest_temp_file, "r", encoding="utf-8") as f:
                     data = json.load(f)
             except json.JSONDecodeError as e:
                 print(f"JSON 파일 읽기 오류: {str(e)}")
@@ -219,32 +224,37 @@ def convert_to_json():
             with Spinner("GPT API 요청 준비 중"):
                 client = openai.OpenAI()
                 prompt = EXAMPLE_PROMPT + json.dumps(data, ensure_ascii=False, indent=2)
-            
+
             print("\nGPT API 호출 중... (시간이 다소 걸릴 수 있습니다)")
             start_time = time.time()
-            
+
             with Spinner("GPT API 처리 중"):
                 response = client.chat.completions.create(
                     model="gpt-4-0125-preview",
                     messages=[
-                        {"role": "system", "content": "당신은 JSON 데이터 변환 전문가입니다. 주어진 예시 형식에 맞게 데이터를 변환해주세요."},
-                        {"role": "user", "content": prompt}
+                        {
+                            "role": "system",
+                            "content": "당신은 JSON 데이터 변환 전문가입니다. 주어진 예시 형식에 맞게 데이터를 변환해주세요.",
+                        },
+                        {"role": "user", "content": prompt},
                     ],
-                    temperature=0
+                    temperature=0,
                 )
-            
+
             elapsed_time = time.time() - start_time
             print(f"GPT API 처리 완료! (소요시간: {elapsed_time:.1f}초)")
-            
+
             with Spinner("응답 데이터 처리 중"):
                 response_text = response.choices[0].message.content
                 # 디버깅을 위한 출력 추가
                 print("\n=== GPT 응답 내용 ===")
                 print(response_text)
                 print("\n=== 응답 내용 끝 ===")
-                
+
                 # JSON 문자열 정제 과정 추가
-                json_str = response_text.replace('```json', '').replace('```', '').strip()
+                json_str = (
+                    response_text.replace("```json", "").replace("```", "").strip()
+                )
                 try:
                     converted_data = json.loads(json_str)
                 except json.JSONDecodeError as e:
@@ -252,26 +262,27 @@ def convert_to_json():
                     print("문제의 JSON 문자열:")
                     print(json_str)
                     return
-            
+
             with Spinner("결과 파일 저장 중"):
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                filename = f'query_results/query_result_{timestamp}.json'
-                
-                with open(filename, 'w', encoding='utf-8') as f:
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"query_results/query_result_{timestamp}.json"
+
+                with open(filename, "w", encoding="utf-8") as f:
                     json.dump(converted_data, f, ensure_ascii=False, indent=2)
                 print(f"\n결과가 다음 파일에 저장되었습니다: {filename}")
-            
+
             with Spinner("임시 파일 정리 중"):
                 for temp_file in temp_files:
                     os.remove(temp_file)
                 print("임시 파일들이 정리되었습니다.")
-            
+
         except Exception as e:
             print(f"GPT API 또는 JSON 변환 오류: {str(e)}")
             return
-            
+
     except Exception as e:
         print(f"\n❌ 전체 처리 오류: {str(e)}")
+
 
 if __name__ == "__main__":
     convert_to_json()

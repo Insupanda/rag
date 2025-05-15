@@ -8,8 +8,10 @@ import faiss
 import numpy as np
 from langchain_community.docstore.in_memory import InMemoryDocstore
 from langchain_community.vectorstores import FAISS
-from langchain_community.vectorstores.utils import (DistanceStrategy,
-                                                    maximal_marginal_relevance)
+from langchain_community.vectorstores.utils import (
+    DistanceStrategy,
+    maximal_marginal_relevance,
+)
 from langchain_openai import OpenAIEmbeddings
 
 index = faiss.IndexFlatL2(len(OpenAIEmbeddings().embed_query("hello world")))
@@ -29,6 +31,7 @@ vector_store = FAISS(
 
 # Document 추가
 from langchain_core.documents import Document
+
 
 document_1 = Document(
     page_content="foo",

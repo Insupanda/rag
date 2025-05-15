@@ -8,9 +8,11 @@ import numpy as np
 from dotenv import load_dotenv
 from pydantic import BaseModel
 
+
 load_dotenv()
 
 from langchain_core.messages import HumanMessage, SystemMessage
+
 # LangChain 임포트
 from langchain_openai import ChatOpenAI
 
