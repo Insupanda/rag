@@ -3,9 +3,6 @@ from openai import OpenAI
 from config.settings import PROJECT_ROOT, settings
 from db.sql_utils import TemplateManager
 from services.insurance_service import InsuranceService
-from db.sql_utils import TemplateManager
-
-from openai import OpenAI
 
 
 if __name__ == "__main__":
