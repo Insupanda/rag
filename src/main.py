@@ -5,8 +5,6 @@ from db.sql_utils import TemplateManager
 from openai import OpenAI
 
 
-# TODO: isort setting precommit setting
-
 if __name__ == "__main__":
     print("\n=== 보험 상담 챗봇 ===")
 

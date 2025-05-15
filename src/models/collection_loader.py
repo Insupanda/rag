@@ -40,7 +40,7 @@ class CollectionLoader:
 
         path = Path(folder_path)
         index_path = str(path / f"{index_name}.{index_extend}")
-        metadata_path = str(path / f"metadata.json")
+        metadata_path = str(path / "metadata.json")
         index = faiss.read_index(index_path)
 
         if not os.path.exists(index_path):

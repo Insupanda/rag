@@ -1,7 +1,7 @@
 import os
 from abc import ABC, abstractmethod
 
-from config.settings import Settings, settings, UserState, user_state
+from config.settings import settings, UserState, user_state
 from util.utils import process_query, find_matching_collections
 from models.search import search
 from models.collection_loader import CollectionLoader
