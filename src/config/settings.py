@@ -1,11 +1,11 @@
+from dataclasses import dataclass
 import os
 from pathlib import Path
-from dataclasses import dataclass
-
-from options.enums import Sex, ProductType
 
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
+
+from options.enums import Sex, ProductType
 
 
 load_dotenv()

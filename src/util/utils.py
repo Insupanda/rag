@@ -1,11 +1,11 @@
-import re
 import copy
+import re
+
+from dotenv import load_dotenv
+from openai import OpenAI
 
 from config.settings import UserState
 from options.enums import Sex
-
-from openai import OpenAI
-from dotenv import load_dotenv
 
 load_dotenv()
 openai_client = OpenAI()
