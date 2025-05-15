@@ -1,7 +1,7 @@
 import re
 import copy
 
-from config.settings import Settings, UserState, user_state
+from config.settings import UserState
 from options.enums import Sex
 
 from openai import OpenAI
@@ -52,7 +52,7 @@ def find_matching_collections(question, available_collections):
     # print(f"사용 가능한 컬렉션: {available_collections}")
 
     if not question or not available_collections:
-        print(f"질문이 비어있거나 사용 가능한 컬렉션이 없음")
+        print("질문이 비어있거나 사용 가능한 컬렉션이 없음")
         print("-------- 컬렉션 매칭 실패 --------\n")
         return []
 
@@ -125,11 +125,6 @@ def find_matching_collections(question, available_collections):
     is_comparison_request = any(
         keyword in normalized_question for keyword in comparison_keywords
     )
-    if is_comparison_request:
-        detected_keywords = [
-            keyword for keyword in comparison_keywords if keyword in normalized_question
-        ]
-        # print(f"비교 키워드 감지: {detected_keywords}")
 
     # 보험 종류 키워드 감지
     detected_insurance_types = [
@@ -329,6 +324,6 @@ def find_matching_collections(question, available_collections):
     matched_collections = list(set(matched_collections))
 
     print(f"최종 매칭된 컬렉션: {matched_collections}")
-    print(f"-------- 컬렉션 매칭 완료 --------\n")
+    print("-------- 컬렉션 매칭 완료 --------\n")
 
     return matched_collections

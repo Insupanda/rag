@@ -1,4 +1,4 @@
-from config.settings import Settings, settings, UserState, user_state
+from config.settings import Settings, settings, UserState
 from db.schema import DB_SCHEMA
 from options.enums import Sex
 
