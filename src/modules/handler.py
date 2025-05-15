@@ -1,16 +1,16 @@
 import os
 from abc import ABC, abstractmethod
 
-from config.settings import settings, UserState, user_state
-from util.utils import process_query, find_matching_collections
-from models.search import search
+from openai import OpenAI
+
+from config.settings import UserState, settings, user_state
+from db.sql_utils import QueryExecutor, SQLGenerator, TemplateManager
 from models.collection_loader import CollectionLoader
 from models.embeddings import UpstageEmbedding
 from models.generate_answer import PolicyResponse
-from db.sql_utils import TemplateManager, SQLGenerator, QueryExecutor
+from models.search import search
 from options.enums import IntentType, ModelType
-
-from openai import OpenAI
+from util.utils import find_matching_collections, process_query
 
 
 class Handler(ABC):

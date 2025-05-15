@@ -1,8 +1,9 @@
-from langchain_openai import ChatOpenAI
 from langchain.schema import SystemMessage
+from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable
-from langchain_core.output_parsers import StrOutputParser
+from langchain_openai import ChatOpenAI
+
 from config.settings import settings
 
 

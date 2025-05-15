@@ -1,6 +1,6 @@
-from db.sql_utils import TemplateManager
-
 from openai import OpenAI
+
+from db.sql_utils import TemplateManager
 
 
 class IntentModule:

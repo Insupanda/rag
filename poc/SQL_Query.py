@@ -1,11 +1,12 @@
+import json
 import os
-from dotenv import load_dotenv
+import re
+from datetime import datetime
+from typing import Optional
+
 import mysql.connector
 import openai
-from typing import Optional
-import re
-import json
-from datetime import datetime
+from dotenv import load_dotenv
 
 # 환경 설정
 load_dotenv()

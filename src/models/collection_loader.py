@@ -1,8 +1,8 @@
-import os
 import json
-import faiss
+import os
 from pathlib import Path
 
+import faiss
 from langchain.embeddings.base import Embeddings
 
 

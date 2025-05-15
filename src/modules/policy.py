@@ -1,14 +1,14 @@
 import os
 
+from openai import OpenAI
+
 from config.settings import settings
 from db.sql_utils import TemplateManager
-from models.search import search
 from models.collection_loader import CollectionLoader
 from models.embeddings import UpstageEmbedding
 from models.generate_answer import generate_answer
+from models.search import search
 from util.utils import find_matching_collections
-
-from openai import OpenAI
 
 
 class PolicyModule:

@@ -1,20 +1,18 @@
-import os
 import json
-import numpy as np
-import faiss
-
-from pydantic import BaseModel
+import os
 from typing import List, Union
 
-from dotenv import load_dotenv
-
+import faiss
 import langsmith
+import numpy as np
+from dotenv import load_dotenv
+from pydantic import BaseModel
 
 load_dotenv()
 
+from langchain_core.messages import HumanMessage, SystemMessage
 # LangChain 임포트
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import SystemMessage, HumanMessage
 
 # LangSmith 설정
 # 이 변수들은 환경 변수에서 가져오거나 직접 설정할 수 있습니다

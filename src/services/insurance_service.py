@@ -1,8 +1,8 @@
-from db.sql_utils import TemplateManager
-from options.enums import ConversationFlow
-from modules.handler import HandlerFactory, IntentHandler
-
 from openai import OpenAI
+
+from db.sql_utils import TemplateManager
+from modules.handler import HandlerFactory, IntentHandler
+from options.enums import ConversationFlow
 
 
 class InsuranceService:

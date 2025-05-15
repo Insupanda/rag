@@ -1,11 +1,12 @@
-from config.settings import Settings, settings, UserState
+from dataclasses import asdict
+
+import mysql.connector
+import simplejson as json
+from jinja2 import Environment, FileSystemLoader
+
+from config.settings import Settings, UserState, settings
 from db.schema import DB_SCHEMA
 from options.enums import Sex
-
-import simplejson as json
-import mysql.connector
-from dataclasses import asdict
-from jinja2 import Environment, FileSystemLoader
 
 
 class TemplateManager:

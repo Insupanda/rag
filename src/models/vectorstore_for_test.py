@@ -1,22 +1,16 @@
-import os
 import json
-import faiss
 import operator
-import numpy as np
+import os
 from pathlib import Path
-from typing import (
-    Any,
-    Callable,
-    Optional,
-    Union,
-)
-from langchain_community.vectorstores import FAISS
+from typing import Any, Callable, Optional, Union
+
+import faiss
+import numpy as np
 from langchain_community.docstore.in_memory import InMemoryDocstore
+from langchain_community.vectorstores import FAISS
+from langchain_community.vectorstores.utils import (DistanceStrategy,
+                                                    maximal_marginal_relevance)
 from langchain_openai import OpenAIEmbeddings
-from langchain_community.vectorstores.utils import (
-    DistanceStrategy,
-    maximal_marginal_relevance,
-)
 
 index = faiss.IndexFlatL2(len(OpenAIEmbeddings().embed_query("hello world")))
 embedding_function = OpenAIEmbeddings()
