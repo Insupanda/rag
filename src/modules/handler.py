@@ -1,5 +1,5 @@
-import os
 from abc import ABC, abstractmethod
+import os
 
 from openai import OpenAI
 
