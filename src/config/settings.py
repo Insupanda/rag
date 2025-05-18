@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from options.enums import Sex, ProductType
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from options.enums import ProductType, Sex
 
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 
@@ -26,9 +26,7 @@ class Settings(BaseSettings):
     openai_api_key: str
     upstage_api_key: str
 
-    model_config = SettingsConfigDict(
-        env_file=f"{PROJECT_ROOT}/.env", env_file_encoding="utf-8"
-    )
+    model_config = SettingsConfigDict(env_file=f"{PROJECT_ROOT}/.env", env_file_encoding="utf-8")
 
     def __repr__(self) -> str:
         gender = "남자" if self.sex == Sex.MALE else "여자"
