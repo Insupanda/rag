@@ -22,5 +22,6 @@ jobs:
           VALIDATE_PYTHON_ISORT: true
           PYTHON_ISORT_CONFIG_FILE: pyproject.toml
           VALIDATE_PYTHON_FLAKE8: true
+          LINTER_RULES_PATH: .
           DEFAULT_BRANCH: "main"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
