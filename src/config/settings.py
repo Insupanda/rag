@@ -32,9 +32,7 @@ class Settings(BaseSettings):
 
     def __repr__(self) -> str:
         gender = "남자" if self.sex == Sex.MALE else "여자"
-        product_type = (
-            "무해지형" if self.product_type == ProductType.NON_REFUND else "해지환급형"
-        )
+        product_type = "무해지형" if self.product_type == ProductType.NON_REFUND else "해지환급형"
         return (
             "\n=== 실행 결과 ===\n"
             "\n[설정값]\n"

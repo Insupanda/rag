@@ -12,9 +12,8 @@ repos:
     rev: 6.1.0
     hooks:
       - id: flake8
-        exclude: samples/
   - repo: https://github.com/timothycrosley/isort
-    rev: 5.12.0
+    rev: 6.0.1
     hooks:
       - id: isort
   - repo: https://github.com/pre-commit/pre-commit-hooks
