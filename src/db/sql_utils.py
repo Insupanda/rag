@@ -73,9 +73,7 @@ class JSONConverter:
 
     def convert(self, generate_json_data: dict) -> str:
         convert_prompt = self.template_manager.render("example_prompt.jinja2")
-        converter_json_data = json.dumps(
-            generate_json_data, ensure_ascii=False, indent=2, use_decimal=True
-        )
+        converter_json_data = json.dumps(generate_json_data, ensure_ascii=False, indent=2, use_decimal=True)
         convert_json_prompt = convert_prompt + converter_json_data
         response = self.model(convert_json_prompt)
         return response

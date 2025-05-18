@@ -18,7 +18,6 @@ class PolicyResponse:
         self.company_results = {}
 
     def extract_company_info(self, search_results: list[dict]) -> str:
-
         for result in search_results:
             collection_name = result.get("collection", "")
             self.company_results.setdefault(collection_name, []).append(result)

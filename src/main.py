@@ -10,7 +10,5 @@ if __name__ == "__main__":
     template_manager = TemplateManager(templates_dir=PROJECT_ROOT / "prompts")
     openai_client = OpenAI(api_key=settings.openai_client)
 
-    insurance_service = InsuranceService(
-        openai_client=openai_client, template_manager=template_manager
-    )
+    insurance_service = InsuranceService(openai_client=openai_client, template_manager=template_manager)
     insurance_service.run()

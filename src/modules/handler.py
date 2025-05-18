@@ -28,9 +28,7 @@ class IntentHandler(Handler):
         super().__init__(openai_client, template_manager)
 
     def handle(self, user_input: str) -> str:
-        intent_template_prompt = self.template_manager.render(
-            "intent_prompt.jinja2", question=user_input
-        )
+        intent_template_prompt = self.template_manager.render("intent_prompt.jinja2", question=user_input)
         response = self.openai_client.chat.completions.create(
             model=ModelType.INTENT_MODEL,
             messages=[
@@ -93,9 +91,7 @@ class PolicyHandler(Handler):
         ]
 
         self.use_collections = (
-            self.collections
-            if self.collections
-            else find_matching_collections(user_input, available_collections)
+            self.collections if self.collections else find_matching_collections(user_input, available_collections)
         )
 
         for use_collection_name in self.use_collections:
@@ -104,9 +100,7 @@ class PolicyHandler(Handler):
     def handle(self, user_input: str) -> str:
         self.load_collections(user_input)
 
-        search_results = search(
-            user_input, self.loader.collections, self.use_collections, top_k=2
-        )
+        search_results = search(user_input, self.loader.collections, self.use_collections, top_k=2)
 
         answer = self.response_policy.generate_answer(user_input, search_results)
         return answer
@@ -114,19 +108,13 @@ class PolicyHandler(Handler):
 
 class HandlerFactory:
     @staticmethod
-    def get_handler(
-        intent: str, openai_client: OpenAI, template_manager: TemplateManager
-    ) -> Handler:
+    def get_handler(intent: str, openai_client: OpenAI, template_manager: TemplateManager) -> Handler:
         generate_sql_query = SQLGenerator(openai_client, template_manager)
         query_executor = QueryExecutor(openai_client, template_manager)
         collection_loader = CollectionLoader(settings.vector_path, UpstageEmbedding)
         response_policy = PolicyResponse(openai_client)
         if intent == IntentType.COMPARE_QUESTION:
-            return CompareHandler(
-                openai_client, template_manager, query_executor, generate_sql_query
-            )
+            return CompareHandler(openai_client, template_manager, query_executor, generate_sql_query)
         if intent == IntentType.POLICY_QUESTION:
-            return PolicyHandler(
-                openai_client, template_manager, collection_loader, response_policy
-            )
+            return PolicyHandler(openai_client, template_manager, collection_loader, response_policy)
         raise ValueError("올바른 intent type이 아닙니다.")
