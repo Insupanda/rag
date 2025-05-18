@@ -1,5 +1,4 @@
 from langchain.schema import SystemMessage
-
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable
@@ -11,9 +10,7 @@ from config.settings import settings
 class PolicyResponse:
     def __init__(self, openai_client: str):
         if not openai_client:
-            return (
-                "OpenAI API key가 제공되지 않았습니다. OPENAI_API_KEY를 설정해주세요."
-            )
+            return "OpenAI API key가 제공되지 않았습니다. OPENAI_API_KEY를 설정해주세요."
         self.openai_client = openai_client
         self.company_results = {}
 

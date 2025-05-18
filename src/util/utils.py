@@ -122,9 +122,7 @@ def find_matching_collections(question, available_collections):
             # print(f"보험사 키워드 감지: {company}")
 
     # 비교 요청 감지
-    is_comparison_request = any(
-        keyword in normalized_question for keyword in comparison_keywords
-    )
+    is_comparison_request = any(keyword in normalized_question for keyword in comparison_keywords)
 
     # 보험 종류 키워드 감지
     detected_insurance_types = [keyword for keyword in insurance_type_keywords if keyword in normalized_question]

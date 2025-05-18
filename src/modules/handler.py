@@ -1,5 +1,5 @@
-from abc import ABC, abstractmethod
 import os
+from abc import ABC, abstractmethod
 
 from openai import OpenAI
 
@@ -64,9 +64,7 @@ class CompareHandler(Handler):
         self.user_state = curr_user_state
         generated_sql = self.sql_generator.generate(prompt, self.user_state)
         self.print_settings(self.user_state)
-        search_result = self.execute_query.execute_sql_query(
-            generated_sql, self.user_state
-        )
+        search_result = self.execute_query.execute_sql_query(generated_sql, self.user_state)
         return search_result
 
 
