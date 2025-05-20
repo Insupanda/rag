@@ -5,10 +5,47 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 from config.settings import UserState
-from options.enums import Sex
+from options.enums import Sex, ProductType
 
 load_dotenv()
 openai_client = OpenAI()
+
+
+class QueryInfoExtract:
+    def __init__(self, prompt: str, user_state: UserState):
+        self.prompt = prompt
+        self.current_state = copy.copy(user_state)
+
+    def extract_age(self):
+        age_match = re.search(r"(\d+)세", self.prompt)
+        if age_match:
+            self.current_state.insu_age = int(age_match.group(1))
+
+    def extract_gender(self):
+        if "남성" in self.prompt or "남자" in self.prompt:
+            self.current_state.insu_sex = Sex.MALE
+        elif "여성" in self.prompt or "여자" in self.prompt:
+            self.current_state.insu_sex = Sex.FEMALE
+
+    def extract_product_type(self):
+        if "무해지" in self.prompt:
+            self.current_state.product_type = ProductType.NON_REFUND
+        elif "해지환급" in self.prompt:
+            self.current_state.product_type = ProductType.REFUND
+
+    def extract_insu_period(self):
+        period_match = re.search(r"(\d+)년[/\s](\d+)세", self.prompt)
+        if period_match:
+            years = period_match.group(1)
+            age = period_match.group(2)
+            self.current_state.expiry_year = f"{years}y_{age}"
+
+    def process(self):
+        self.extract_age()
+        self.extract_gender()
+        self.extract_product_type()
+        self.extract_insu_period()
+        return self.prompt, self.current_state
 
 
 def process_query(prompt: str, user_state: UserState):
@@ -47,10 +84,6 @@ def find_matching_collections(question, available_collections):
     사용자 질문에서 보험사 관련 키워드를 검출하여 일치하는 컬렉션 이름 목록 반환
     비교 질문인 경우 관련된 모든 보험사 컬렉션 반환
     """
-    # print(f"\n-------- 컬렉션 매칭 시작 --------")
-    # print(f"질문: '{question}'")
-    # print(f"사용 가능한 컬렉션: {available_collections}")
-
     if not question or not available_collections:
         print("질문이 비어있거나 사용 가능한 컬렉션이 없음")
         print("-------- 컬렉션 매칭 실패 --------\n")

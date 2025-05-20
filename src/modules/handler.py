@@ -10,7 +10,7 @@ from models.embeddings import UpstageEmbedding
 from models.generate_answer import PolicyResponse
 from models.search import search
 from options.enums import IntentType, ModelType
-from util.utils import find_matching_collections, process_query
+from util.utils import find_matching_collections, QueryInfoExtract
 
 
 class Handler(ABC):
@@ -59,7 +59,8 @@ class CompareHandler(Handler):
         print(repr(user_state))
 
     def handle(self, user_input: str) -> str:
-        prompt, curr_user_state = process_query(user_input, self.user_state)
+        process_query = QueryInfoExtract(user_input, self.user_state)
+        prompt, curr_user_state = process_query.process()
         self.user_state = curr_user_state
         generated_sql = self.sql_generator.generate(prompt, self.user_state)
         self.print_settings(self.user_state)
