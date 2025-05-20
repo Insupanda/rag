@@ -2,12 +2,10 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-from dotenv import load_dotenv
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from options.enums import ProductType, Sex
 
-load_dotenv()
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 
 
