@@ -28,9 +28,7 @@ rag/
 │   │   ├── search.py               # 검색 파일
 │   │   └── embeddings.py           # 임베딩 파일
 │   ├── modules/                     
-│   │   ├── compare.py              # 비교설계 모듈
-│   │   ├── intent.py               # 의도분류 모듈
-│   │   └── policy.py               # 보험약관질의 모듈
+│   │   └── handler.py               # 보험약관질의 모듈
 │   ├── options/                     
 │   │   └── enums.py
 │   ├── prompts/                    # 프롬프트 폴더
