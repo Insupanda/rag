@@ -44,37 +44,6 @@ class QueryInfoExtract:
         return self.prompt, self.current_state
 
 
-def process_query(prompt: str, user_state: UserState):
-    # dataclass 인스턴스 복사 (얕은 복사)
-    current_state = copy.copy(user_state)
-
-    # 나이 추출 (숫자 + "세" 패턴)
-    age_match = re.search(r"(\d+)세", prompt)
-    if age_match:
-        current_state.insu_age = int(age_match.group(1))
-
-    # 성별 추출
-    if "남성" in prompt or "남자" in prompt:
-        current_state.insu_sex = Sex.MALE
-    elif "여성" in prompt or "여자" in prompt:
-        current_state.insu_sex = Sex.FEMALE
-
-    # 상품유형 추출
-    if "무해지" in prompt:
-        current_state.product_type = "nr"
-    elif "해지환급" in prompt:
-        current_state.product_type = "r"
-
-    # 보험기간 추출
-    period_match = re.search(r"(\d+)년[/\s](\d+)세", prompt)
-    if period_match:
-        years = period_match.group(1)
-        age = period_match.group(2)
-        current_state.expiry_year = f"{years}y_{age}"
-
-    return prompt, current_state
-
-
 def find_matching_collections(question, available_collections):
     """
     사용자 질문에서 보험사 관련 키워드를 검출하여 일치하는 컬렉션 이름 목록 반환
