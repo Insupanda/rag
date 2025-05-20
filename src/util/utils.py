@@ -1,8 +1,6 @@
 import copy
 import re
 
-from openai import OpenAI
-
 from config.settings import UserState
 from options.enums import ProductType, Sex
 
