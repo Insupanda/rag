@@ -10,7 +10,7 @@ from models.embeddings import UpstageEmbedding
 from models.generate_answer import PolicyResponse
 from models.search import search
 from options.enums import IntentType, ModelType
-from util.utils import find_matching_collections, QueryInfoExtract
+from util.utils import QueryInfoExtract, find_matching_collections
 
 
 class Handler(ABC):

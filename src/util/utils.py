@@ -1,14 +1,10 @@
 import copy
 import re
 
-from dotenv import load_dotenv
 from openai import OpenAI
 
 from config.settings import UserState
-from options.enums import Sex, ProductType
-
-load_dotenv()
-openai_client = OpenAI()
+from options.enums import ProductType, Sex
 
 
 class QueryInfoExtract:
