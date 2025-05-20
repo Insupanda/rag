@@ -1,12 +1,11 @@
-from dataclasses import dataclass
 import os
+from dataclasses import dataclass
 from pathlib import Path
 
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
 from options.enums import ProductType, Sex
-
 
 load_dotenv()
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
@@ -24,9 +23,7 @@ class UserState:
 
     def __repr__(self) -> str:
         gender = "남자" if self.insu_sex == Sex.MALE else "여자"
-        product_type = (
-            "무해지형" if self.product_type == ProductType.NON_REFUND else "해지환급형"
-        )
+        product_type = "무해지형" if self.product_type == ProductType.NON_REFUND else "해지환급형"
         return (
             "\n=== 실행 결과 ===\n"
             "\n[설정값]\n"

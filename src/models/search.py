@@ -19,9 +19,7 @@ def search(query, collections, collection_names=None, top_k=2):
         ]
 
     all_results = []
-    use_collections = [
-        c for c in collections if not collection_names or c["name"] in collection_names
-    ]
+    use_collections = [c for c in collections if not collection_names or c["name"] in collection_names]
     if not use_collections:
         return [
             {
@@ -144,9 +142,7 @@ def search(query, collections, collection_names=None, top_k=2):
                             idx_int = int(idx)
                             meta_len = len(metadata)
                             if 0 <= idx_int < meta_len:
-                                print(
-                                    f"인덱스 {idx_int}를 배열 접근으로 시도 (배열 길이: {meta_len})"
-                                )
+                                print(f"인덱스 {idx_int}를 배열 접근으로 시도 (배열 길이: {meta_len})")
                                 try:
                                     # 리스트로 변환된 딕셔너리에서 키로 접근
                                     list_keys = list(metadata.keys())
@@ -179,9 +175,7 @@ def search(query, collections, collection_names=None, top_k=2):
                                 "collection": collection_name,
                                 "id": doc_id,
                                 "score": float(score),
-                                "metadata": {
-                                    "text": f"인덱스 {idx}의 메타데이터를 찾을 수 없습니다."
-                                },
+                                "metadata": {"text": f"인덱스 {idx}의 메타데이터를 찾을 수 없습니다."},
                             }
                         )
                         # 이 결과도 all_results에 추가
@@ -190,9 +184,7 @@ def search(query, collections, collection_names=None, top_k=2):
                                 "collection": collection_name,
                                 "id": doc_id,
                                 "score": float(score),
-                                "metadata": {
-                                    "text": f"인덱스 {idx}의 메타데이터를 찾을 수 없습니다."
-                                },
+                                "metadata": {"text": f"인덱스 {idx}의 메타데이터를 찾을 수 없습니다."},
                             }
                         )
 
