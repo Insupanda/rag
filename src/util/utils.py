@@ -115,7 +115,6 @@ def find_matching_collections(question, available_collections):
     for company, keywords in insurance_company_keywords.items():
         if any(keyword in normalized_question for keyword in keywords):
             mentioned_companies.append(company)
-            # print(f"보험사 키워드 감지: {company}")
 
     # 비교 요청 감지
     is_comparison_request = any(keyword in normalized_question for keyword in comparison_keywords)
