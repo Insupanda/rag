@@ -1,6 +1,7 @@
+from typing import Any
+
 import faiss
 import numpy as np
-from typing import Any
 
 from config.settings import settings
 from models.embeddings import UpstageEmbedding
