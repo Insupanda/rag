@@ -1,9 +1,9 @@
 import copy
 import re
 
+from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_openai import ChatOpenAI
-from langchain.prompts import PromptTemplate
 
 from config.settings import UserState, settings
 from options.enums import ProductType, Sex
@@ -52,7 +52,7 @@ def insurance_keywords_mapping() -> dict[str, list[str]]:
     gpt4o = ChatOpenAI(model_name="gpt-4o-2024-08-06", temperature=0.1, api_key=settings.openai_api_key)
 
     keyword_chain_template = PromptTemplate.from_template(
-        f"""
+        """
     {{insu_filename}}를 참고해서 각 키워드마다 해당하는 패턴을 value로 채워주세요.
     반드시 value는 영어약자가 포함됩니다. key는 반드시 한글로 출력하세요.
     영어약자는 {{insu_filename}}에서 _기준으로 앞부분을 참고하세요.
