@@ -60,7 +60,7 @@ def insurance_keywords_mapping() -> dict[str, list[str]]:
 
     "NH농협손해보험": ["NH농협손해보험", "NH손해보험", "농협손해보험", "NH손보", "농협손보", "NH", "농협"],
     "DB손해보험": ["db손해보험", "db손해", "db보험", "db", "디비손해보험", "디비"],
-    {{keywords}}: 
+    {{keywords}}:
 
     """.strip()
     )
