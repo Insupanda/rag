@@ -26,7 +26,7 @@ class Search:
             return [self.document_]
         self.top_k = top_k
 
-    def search_index(self, index, collection_name, query_embedding):
+    def search_index(self, index: faiss.Index, collection_name: str, query_embedding: float) -> tuple:
         query_dim = query_embedding.shape[1]
         # 각 컬렉션에서 항상 top_k개의 문서 검색
 
@@ -61,7 +61,7 @@ class Search:
         normalized_scores = (score + 1) / 2
         return normalized_scores, indices
 
-    def search_metadata(self, scores, indices, metadata, collection_name) -> None:
+    def search_metadata(self, scores, indices, metadata: dict, collection_name: str) -> None:
         collection_results = []
         for i, (idx, score) in enumerate(zip(indices[0], scores[0])):
             if idx != -1:  # -1은 결과가 없음을 의미
