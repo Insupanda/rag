@@ -53,7 +53,7 @@ class CollectionLoader:
             if coll["name"] == collection_name:
                 print(f"{collection_name} 컬렉션이 이미 로드되어 있습니다.")
 
-        if collection_name not in insu_match.__dict__.values():
+        if collection_name not in insu_match.values():
             raise ValueError(f"{collection_name} 컬렉션을 찾을 수 없습니다.")
 
         collection_dir = os.path.join(self.base_path, collection_name)
