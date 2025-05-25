@@ -8,7 +8,7 @@ from db.sql_utils import QueryExecutor, SQLGenerator, TemplateManager
 from models.collection_loader import CollectionLoader
 from models.embeddings import UpstageEmbedding
 from models.generate_answer import PolicyResponse
-from models.search import search
+from models.search import Search
 from options.enums import IntentType, ModelType
 from util.utils import QueryInfoExtract, find_matching_collections
 
@@ -98,7 +98,7 @@ class PolicyHandler(Handler):
     def handle(self, user_input: str) -> str:
         self.load_collections(user_input)
 
-        search_results = search(user_input, self.loader.collections, self.use_collections, top_k=2)
+        search_results = Search(user_input, self.loader.collections, self.use_collections, top_k=2).result()
 
         answer = self.response_policy.generate_answer(user_input, search_results)
         return answer
