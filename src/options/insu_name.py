@@ -1,12 +1,4 @@
-from typing import TypedDict
-
-
-class InsuMatch(TypedDict):
-    insu_company_name: str
-    insu_filename: str
-
-
-insu_match: InsuMatch = {
+insu_match = {
     "DB손해보험": "DBSonBo_YakMu20250123",
     "삼성화재": "Samsung_YakMu2404103NapHae20250113",
     "하나손해보험": "HaNa_YakMuHaGaengPyo20250101",
