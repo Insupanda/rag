@@ -73,7 +73,7 @@ class FaissSearch:
         collection_results: list[OrganizedCollection] = []
         for i, (index, dist) in enumerate(zip(indices[0], distances[0])):
             if index == -1:
-                raise ValueError(f"인덱스에 해당하는 메타데이터 결과가 없습니다.")
+                raise ValueError("인덱스에 해당하는 메타데이터 결과가 없습니다.")
 
             doc_id = str(index)
             if doc_id in metadata:
