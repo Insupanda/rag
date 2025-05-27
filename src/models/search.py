@@ -1,16 +1,27 @@
-from typing import Any
+import logging
+from typing import Optional
 
 import faiss
 import numpy as np
 
 from config.settings import settings
+from models.dict_types import DocIDMetadata, OrganizedCollection, RawCollection
 from models.embeddings import UpstageEmbedding
 
+DocIds = str
+InsuFileNames = str
+logging.basicConfig(level=logging.INFO)
 upembedding = UpstageEmbedding(settings.upstage_api_key)
 
 
-class Search:
-    def __init__(self, query: str, collections: list[str], collection_names: str = None, top_k: int = 2):
+class FaissSearch:
+    def __init__(
+        self,
+        query: str,
+        total_collections: list[RawCollection],
+        collection_names: Optional[list[InsuFileNames]] = None,
+        top_k: int = 2,
+    ):
         self.query = query
         self.default_document = {
             "collection": "default",
@@ -18,90 +29,92 @@ class Search:
             "score": 1.0,
             "metadata": {"text": "로드된 컬렉션이 없습니다."},
         }
-        self.collections = collections
-        self.all_results = []
-        self.use_collections = [c for c in collections if not collection_names or c["name"] in collection_names]
+        self.collections = total_collections
+        self.target_collections = [
+            collection
+            for collection in total_collections
+            if not collection_names or collection["name"] in collection_names
+        ]
         self.top_k = top_k
 
-    def search_index(self, index: faiss.Index, collection_name: str, query_embedding: float) -> tuple:
+    def pad_embedding(self, query_embedding: np.ndarray, index: faiss.Index) -> np.ndarray:
         query_dim = query_embedding.shape[1]
+        index_dim = index.d
 
-        print(f"검색 중: {collection_name} 컬렉션")
+        if query_dim == index_dim:
+            return query_embedding
 
-        if query_dim != index.d:
-            print(f"차원 불일치: 쿼리={query_dim}, 인덱스={index.d}")
-            # 차원이 다른 경우 벡터를 올바른 차원으로 패딩하거나 자름
-            if query_dim < index.d:
-                # 패딩: 부족한 차원을 0으로 채움
-                padded = np.zeros((1, index.d), dtype=np.float32)
-                padded[0, :query_dim] = query_embedding[0, :]
-                query_embedding = padded
-                print(f"쿼리 벡터를 {query_dim}에서 {index.d}로 패딩했습니다.")
-            else:
-                # 자름: 여분의 차원을 제거
-                query_embedding = query_embedding[0, : index.d].reshape(1, -1)
-                print(f"쿼리 벡터를 {query_dim}에서 {index.d}로 잘랐습니다.")
+        if query_dim < index_dim:
+            padded_embedding = np.zeros((1, index_dim), dtype=query_embedding.dtype)
+            padded_embedding[0, :query_dim] = query_embedding[0, :]
+            return padded_embedding
 
+        if query_dim > index_dim:
+            trimmed_embedding = query_embedding[0, :index_dim].reshape(1, -1)
+            return trimmed_embedding
+
+    def search_L2_index_by_query(
+        self, index: faiss.Index, query_embedding: np.ndarray
+    ) -> tuple[np.ndarray, np.ndarray]:
         faiss.normalize_L2(query_embedding)
-        query_norm = np.linalg.norm(query_embedding)
-        if abs(query_norm - 1.0) > 1e-5:
-            # 강제로 정규화
-            query_embedding = query_embedding / query_norm
 
-        # 각 컬렉션에서 항상 top_k개의 문서 검색
-        score, indices = index.search(query_embedding, self.top_k)
+        distance, indices = index.search(query_embedding, self.top_k)
+        distance = np.minimum(distance, 1.0)
+        return distance, indices
 
-        if np.any(score > 1.01):  # 약간의 오차 허용
-            score = np.minimum(score, 1.0)
+    def search_metadata_by_index(
+        self,
+        distances: np.ndarray,
+        indices: np.ndarray,
+        metadata: dict[DocIds, DocIDMetadata],
+        collection_filename: str,
+    ) -> list[str]:
+        print(f"검색 중: {collection_filename} 컬렉션")
+        collection_results: list[OrganizedCollection] = []
+        for i, (index, dist) in enumerate(zip(indices[0], distances[0])):
+            if index == -1:
+                raise ValueError(f"인덱스에 해당하는 메타데이터 결과가 없습니다.")
 
-        normalized_scores = (score + 1) / 2
-        return normalized_scores, indices
+            doc_id = str(index)
+            if doc_id in metadata:
+                doc_metadata = metadata[doc_id]
+                collection_results.append(
+                    {
+                        "collection": collection_filename,
+                        "doc_id": doc_id,
+                        "score": float(dist),
+                        "metadata": doc_metadata,
+                    }
+                )
 
-    def search_metadata(self, scores, indices, metadata: dict, collection_name: str) -> None:
-        collection_results = []
-        for i, (idx, score) in enumerate(zip(indices[0], scores[0])):
-            if idx != -1:  # -1은 결과가 없음을 의미
-                # 메타데이터에서 해당 인덱스의 정보 가져오기
-                doc_id = str(idx)
+            if doc_id not in metadata:
+                raise ValueError(f"메타데이터에서 키 {doc_id} 찾을 수 없습니다.")
+        self.total_collection_result.extend(collection_results)
 
-                # 메타데이터 키가 존재하는지 확인
-                if doc_id in metadata:
-                    doc_metadata = metadata[doc_id]
-                    collection_results.append(
-                        {
-                            "collection": collection_name,
-                            "id": doc_id,
-                            "score": float(score),
-                            "metadata": doc_metadata,
-                        }
-                    )
-                else:
-                    raise ValueError(f"메타데이터에서 키 {doc_id} 찾을 수 없습니다.")
-        self.all_results.extend(collection_results)
-
-    def result(self) -> list[dict[str, Any]]:
+    def get_results(self) -> list[dict[DocIds, DocIDMetadata]]:
         print("\n-------- 벡터 검색 시작 --------")
-        print(f"쿼리: '{self.query}'")
-        print(f"대상 컬렉션: {[c['name'] for c in self.use_collections]}")
-        print(f"각 컬렉션당 top_k: {self.top_k}\n")
+        logging.info(f"쿼리: '{self.query}'")
+        logging.info(f"대상 컬렉션: {[collection['name'] for collection in self.target_collections]}")
+        logging.info(f"각 컬렉션당 top_k: {self.top_k}\n")
         if not self.collections:
             return [self.default_document]
-        if not self.use_collections:
+        if not self.target_collections:
             return [self.default_document]
 
+        self.total_collection_result: list[dict[DocIds, DocIDMetadata]] = []
         query_embedding = upembedding.get_upstage_embedding(self.query)
 
         if isinstance(query_embedding, list):
             query_embedding = np.array(query_embedding, dtype=np.float32).reshape(1, -1)
         if len(query_embedding.shape) == 1:
             query_embedding = query_embedding.reshape(1, -1)
-
-        for collection in self.use_collections:
+        for collection in self.target_collections:
             index = collection["index"]
             metadata = collection["metadata"]
             collection_name = collection["name"]
-            score, indices = self.search_index(index, collection_name, query_embedding)
-            self.search_metadata(score, indices, metadata, collection_name)
-        print(f"\n총 {len(self.all_results)}개 청크 검색됨")
+            query_embedding = self.pad_embedding(query_embedding, index)
+            score, indices = self.search_L2_index_by_query(index, query_embedding)
+            self.search_metadata_by_index(score, indices, metadata, collection_name)
+        logging.info(f"\n총 {len(self.total_collection_result)}개 청크 검색됨")
         print("-------- 벡터 검색 완료 --------\n")
-        return self.all_results if self.all_results else [self.default_document]
+        return self.total_collection_result if self.total_collection_result else [self.default_document]
