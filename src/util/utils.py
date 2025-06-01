@@ -76,7 +76,7 @@ def insurance_keywords_mapping() -> dict[InsuCompanyName, InsuKeywords]:
     return mapping_dict
 
 
-def find_detected_keywords(user_input: str) -> tuple[list[InsuCompanyName], bool, str]:
+def find_detected_keywords(user_input: str) -> tuple[list[InsuCompanyName], bool, list[str]]:
     insurance_company_keywords = insurance_keywords_mapping()
     insurance_type_keywords = ["암", "상해", "질병", "재물", "화재", "운전자", "자동차", "실손"]
     comparison_keywords = ["비교", "차이", "다른", "다른점", "비교해", "비교해줘", "차이점", "알려줘", "뭐가 더 나은가"]
@@ -123,7 +123,7 @@ def find_matching_collections(user_input: str, available_collections: list[InsuF
             matched_collections.update(list(insu_match.values()))
 
     # 중복 제거
-    matched_collections = list(matched_collections)
+    matched_collections: list[str] = list(matched_collections)
 
     print(f"최종 매칭된 컬렉션: {matched_collections}")
     print("-------- 컬렉션 매칭 완료 --------\n")
