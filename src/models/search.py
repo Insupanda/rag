@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 import faiss
 import numpy as np
@@ -19,7 +18,7 @@ class FaissSearch:
         self,
         query: str,
         total_collections: list[RawCollection],
-        collection_names: Optional[list[InsuFileNames]] = None,
+        collection_names: list[InsuFileNames] = [],
         top_k: int = 2,
     ):
         self.query = query
@@ -49,9 +48,8 @@ class FaissSearch:
             padded_embedding[0, :query_dim] = query_embedding[0, :]
             return padded_embedding
 
-        if query_dim > index_dim:
-            trimmed_embedding = query_embedding[0, :index_dim].reshape(1, -1)
-            return trimmed_embedding
+        trimmed_embedding = query_embedding[0, :index_dim].reshape(1, -1)
+        return trimmed_embedding
 
     def search_L2_index_by_query(
         self, index: faiss.Index, query_embedding: np.ndarray
@@ -96,9 +94,7 @@ class FaissSearch:
         logging.info(f"쿼리: '{self.query}'")
         logging.info(f"대상 컬렉션: {[collection['name'] for collection in self.target_collections]}")
         logging.info(f"각 컬렉션당 top_k: {self.top_k}\n")
-        if not self.collections:
-            return [self.default_document]
-        if not self.target_collections:
+        if not self.collections or not self.target_collections:
             return [self.default_document]
 
         self.total_collection_result: list[dict[DocIds, DocIDMetadata]] = []
