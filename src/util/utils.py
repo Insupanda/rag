@@ -111,7 +111,7 @@ def find_matching_collections(user_input: str, available_collections: list[InsuF
 
     # 두 개 이상 보험사가 언급되었거나 비교 요청이 있는 경우
     # '암' 키워드가 언급된 경우에도 모든 보험사 정보가 필요할 수 있음
-    matched_collections: set[InsuFileName] = set()
+    matched_collections: list[InsuFileName] = set()
     if len(mentioned_companies) > 1 or is_comparison_module or CANCER in detected_insurance_types:
         # 모든 보험사 컬렉션 추가
         matched_collections.update(list(insu_match.values()))
@@ -123,7 +123,7 @@ def find_matching_collections(user_input: str, available_collections: list[InsuF
             matched_collections.update(list(insu_match.values()))
 
     # 중복 제거
-    matched_collections: list[str] = list(matched_collections)
+    matched_collections = list(matched_collections)
 
     print(f"최종 매칭된 컬렉션: {matched_collections}")
     print("-------- 컬렉션 매칭 완료 --------\n")
