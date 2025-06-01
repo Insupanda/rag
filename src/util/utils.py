@@ -6,7 +6,7 @@ from langchain_core.output_parsers import JsonOutputParser
 from langchain_openai import ChatOpenAI
 
 from config.settings import UserState, settings
-from options.enums import ProductType, Sex
+from options.enums import ModelType, ProductType, Sex, product_type_mapping_table
 from options.insu_name import insu_match
 
 InsuCompanyName = str
@@ -26,15 +26,15 @@ class QueryInfoExtract:
             self.current_state.insu_age = int(age_match.group(1))
 
     def extract_sex(self) -> None:
-        if "남성" in self.user_input or "남자" in self.user_input:
+        if re.search(r"(남성|남자)", self.user_input):
             self.current_state.insu_sex = Sex.MALE
-        elif "여성" in self.user_input or "여자" in self.user_input:
+        elif re.search(r"(여성|여자)", self.user_input):
             self.current_state.insu_sex = Sex.FEMALE
 
     def extract_product_type(self) -> None:
-        if "무해지" in self.user_input:
+        if product_type_mapping_table[ProductType.NON_REFUND] in self.user_input:
             self.current_state.product_type = ProductType.NON_REFUND
-        elif "해지환급" in self.user_input:
+        elif product_type_mapping_table[ProductType.REFUND] in self.user_input:
             self.current_state.product_type = ProductType.REFUND
 
     def extract_insu_period(self) -> None:
@@ -53,20 +53,19 @@ class QueryInfoExtract:
 
 
 def insurance_keywords_mapping() -> dict[InsuCompanyName, InsuKeywords]:
-    insu_filename = [insu_match.values()]
-    gpt4o = ChatOpenAI(model_name="gpt-4o-2024-08-06", temperature=0.1, api_key=settings.openai_api_key)
+    insu_filename = insu_match.values()
+    gpt4o = ChatOpenAI(model_name=ModelType.KEYWORD_MODEL, temperature=0.1, api_key=settings.openai_api_key)
 
     keyword_chain_template = PromptTemplate.from_template(
         """
-    {{insu_filename}}를 참고해서 각 키워드마다 해당하는 패턴을 value로 채워주세요.
+    {insu_filename}를 참고해서 각 키워드마다 해당하는 패턴을 value로 채워주세요.
     반드시 value는 영어약자가 포함됩니다. key는 반드시 한글로 출력하세요.
-    영어약자는 {{insu_filename}}에서 _기준으로 앞부분을 참고하세요.
+    영어약자는 {insu_filename}에서 _기준으로 앞부분을 참고하세요.
     반환 형태를 key: value 형식인 JSON 형식으로 출력하세요.
 
     "NH농협손해보험": ["NH농협손해보험", "NH손해보험", "농협손해보험", "NH손보", "농협손보", "NH", "농협"],
     "DB손해보험": ["db손해보험", "db손해", "db보험", "db", "디비손해보험", "디비"],
-    {{keywords}}:
-
+    {keywords}:
     """.strip()
     )
 
@@ -78,17 +77,16 @@ def insurance_keywords_mapping() -> dict[InsuCompanyName, InsuKeywords]:
 
 
 def find_detected_keywords(user_input: str) -> tuple[list[InsuCompanyName], bool, str]:
-
     insurance_company_keywords = insurance_keywords_mapping()
     insurance_type_keywords = ["암", "상해", "질병", "재물", "화재", "운전자", "자동차", "실손"]
     comparison_keywords = ["비교", "차이", "다른", "다른점", "비교해", "비교해줘", "차이점", "알려줘", "뭐가 더 나은가"]
 
     mentioned_companies: list[InsuCompanyName] = []
     for company, keywords in insurance_company_keywords.items():
-        if any(keyword in user_input for keyword in keywords):
+        if re.search("|".join(keywords), user_input):
             mentioned_companies.append(company)
 
-    is_comparison_module = any(keyword in user_input for keyword in comparison_keywords)
+    is_comparison_module = re.search("|".join(comparison_keywords), user_input) is not None
     detected_insurance_types = [keyword for keyword in insurance_type_keywords if keyword in user_input]
 
     if detected_insurance_types:
@@ -113,19 +111,19 @@ def find_matching_collections(user_input: str, available_collections: list[InsuF
 
     # 두 개 이상 보험사가 언급되었거나 비교 요청이 있는 경우
     # '암' 키워드가 언급된 경우에도 모든 보험사 정보가 필요할 수 있음
-    matched_collections: list[InsuFileName] = []
+    matched_collections: set[InsuFileName] = set()
     if len(mentioned_companies) > 1 or is_comparison_module or CANCER in detected_insurance_types:
         # 모든 보험사 컬렉션 추가
-        matched_collections.extend(list(insu_match.values()))
-
+        matched_collections.update(list(insu_match.values()))
     else:
-        if mentioned_companies in list(insu_match.keys()):
-            matched_collections.append(insu_match[mentioned_companies])
+        for insu_company in mentioned_companies:
+            if insu_company in insu_match:
+                matched_collections.add(insu_match[insu_company])
         if len(mentioned_companies) == 0:
-            matched_collections.extend(list(insu_match.values()))
+            matched_collections.update(list(insu_match.values()))
 
     # 중복 제거
-    matched_collections = list(set(matched_collections))
+    matched_collections = list(matched_collections)
 
     print(f"최종 매칭된 컬렉션: {matched_collections}")
     print("-------- 컬렉션 매칭 완료 --------\n")
