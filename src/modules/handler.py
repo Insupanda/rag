@@ -3,14 +3,15 @@ from abc import ABC, abstractmethod
 
 from openai import OpenAI
 
-from config.settings import UserState, settings, user_state
+from config.settings import settings
 from db.sql_utils import QueryExecutor, SQLGenerator, TemplateManager
 from models.collection_loader import CollectionLoader
 from models.embeddings import UpstageEmbedding
 from models.generate_answer import PolicyResponse
 from models.search import search
+from modules.user_state import UserState, user_state
 from options.enums import IntentType, ModelType
-from util.utils import QueryInfoExtract, find_matching_collections
+from util.utils import QueryInfoExtractor, find_matching_collections
 
 
 class Handler(ABC):
@@ -59,10 +60,10 @@ class CompareHandler(Handler):
         print(repr(user_state))
 
     def handle(self, user_input: str) -> str:
-        process_query = QueryInfoExtract(user_input, self.user_state)
-        prompt, curr_user_state = process_query.process()
+        extract_query = QueryInfoExtractor(user_input, self.user_state)
+        curr_user_state = extract_query.update_by_user_input()
         self.user_state = curr_user_state
-        generated_sql = self.sql_generator.generate(prompt, self.user_state)
+        generated_sql = self.sql_generator.generate(user_input, self.user_state)
         self.print_settings(self.user_state)
         search_result = self.execute_query.execute_sql_query(generated_sql, self.user_state)
         return search_result

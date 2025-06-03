@@ -29,7 +29,7 @@ class ModelType(StrEnum):
 
 
 sex_mapping_table = {
-    Sex.MALE: "남성",
+    Sex.MALE: "남자",
     Sex.FEMALE: "여자",
 }
 

@@ -5,8 +5,9 @@ from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_openai import ChatOpenAI
 
-from config.settings import UserState, settings
-from options.enums import ModelType, ProductType, Sex, product_type_mapping_table
+from config.settings import settings
+from modules.user_state import UserState
+from options.enums import ModelType
 from options.insu_name import insu_match
 
 InsuCompanyName = str
@@ -15,41 +16,25 @@ InsuFileName = str
 CANCER = "암"
 
 
-class QueryInfoExtract:
+class QueryInfoExtractor(UserState):
     def __init__(self, user_input: str, user_state: UserState):
+        super().__init__()
         self.user_input = user_input
         self.current_state = copy.copy(user_state)
 
-    def extract_age(self) -> None:
-        age_match = re.search(r"(\d+)세", self.user_input)
-        if age_match:
-            self.current_state.insu_age = int(age_match.group(1))
-
-    def extract_sex(self) -> None:
-        if re.search(r"(남성|남자)", self.user_input):
-            self.current_state.insu_sex = Sex.MALE
-        elif re.search(r"(여성|여자)", self.user_input):
-            self.current_state.insu_sex = Sex.FEMALE
-
-    def extract_product_type(self) -> None:
-        if product_type_mapping_table[ProductType.NON_REFUND] in self.user_input:
-            self.current_state.product_type = ProductType.NON_REFUND
-        elif product_type_mapping_table[ProductType.REFUND] in self.user_input:
-            self.current_state.product_type = ProductType.REFUND
-
-    def extract_insu_period(self) -> None:
-        period_match = re.search(r"(\d+)년[/\s](\d+)세", self.user_input)
-        if period_match:
-            years = period_match.group(1)
-            age = period_match.group(2)
-            self.current_state.expiry_year = f"{years}y_{age}"
-
-    def process(self) -> tuple[str, UserState]:
-        self.extract_age()
-        self.extract_sex()
-        self.extract_product_type()
-        self.extract_insu_period()
-        return self.user_input, self.current_state
+    def update_by_user_input(self) -> UserState:
+        super().update_by_user_input(self.user_input)
+        if self.insu_age is not None:
+            self.current_state.insu_age = self.insu_age
+        if self.insu_sex is not None:
+            self.current_state.insu_sex = self.insu_sex
+        if self.product_type is not None:
+            self.current_state.product_type = self.product_type
+        if self.expiry is not None:
+            self.current_state.expiry = self.expiry
+        if self.duration is not None:
+            self.current_state.duration = self.duration
+        return self.current_state
 
 
 def insurance_keywords_mapping() -> dict[InsuCompanyName, InsuKeywords]:

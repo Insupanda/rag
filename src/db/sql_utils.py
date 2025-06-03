@@ -1,11 +1,10 @@
-from dataclasses import asdict
-
 import mysql.connector
 import simplejson as json
 from jinja2 import Environment, FileSystemLoader
 
-from config.settings import Settings, UserState, settings
+from config.settings import Settings, settings
 from db.schema import DB_SCHEMA
+from modules.user_state import UserState
 from options.enums import Sex
 
 
@@ -102,6 +101,9 @@ class SQLGenerator:
         return response
 
     def generate(self, prompt: str, user_state: UserState) -> str:
+        print("user_state.insu_age", user_state.insu_age)
+        print("user_state.insu_sex", user_state.insu_sex)
+        print("user_state.product_type", user_state.product_type)
         self.generate_sql_system_prompt = self.template_manager.render(
             "base_prompt.jinja2",
             schema=DB_SCHEMA,
@@ -128,7 +130,7 @@ class QueryExecutor:
             print(f"전체 결과 수: {len(results)}개")
             # 검색 결과와 설정값을 함께 딕셔너리로 구성
             temp_data = {
-                "설정값": asdict(user_state),
+                "설정값": user_state.__dict__,
                 "쿼리": generated_sql,
                 "결과": results,  # 각 행은 이미 딕셔너리 형태임
             }
