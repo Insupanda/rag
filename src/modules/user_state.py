@@ -69,9 +69,9 @@ class UserState:
     def extract_expiry_and_duration(cls, user_input: str) -> tuple[EXPIRY, DURATION]:
         period_match = re.search(r"(\d+)년[/\s](\d+)세", user_input)
         if period_match:
-            expiry: EXPIRY = period_match.group(1)
-            duration: DURATION = period_match.group(2)
-            return int(expiry), int(duration)
+            expiry: EXPIRY = int(period_match.group(1))
+            duration: DURATION = int(period_match.group(2))
+            return expiry, duration
 
     def update_by_user_input(self, user_input: str) -> None:
         self.insu_age = UserState.extract_age(user_input)
