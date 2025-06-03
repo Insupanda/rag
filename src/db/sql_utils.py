@@ -101,9 +101,6 @@ class SQLGenerator:
         return response
 
     def generate(self, prompt: str, user_state: UserState) -> str:
-        print("user_state.insu_age", user_state.insu_age)
-        print("user_state.insu_sex", user_state.insu_sex)
-        print("user_state.product_type", user_state.product_type)
         self.generate_sql_system_prompt = self.template_manager.render(
             "base_prompt.jinja2",
             schema=DB_SCHEMA,
