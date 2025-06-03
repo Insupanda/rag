@@ -3,8 +3,8 @@ from typing import Optional
 
 from options.enums import ProductType, Sex, product_type_mapping_table, sex_mapping_table
 
-EXPIRY = int
-DURATION = int
+EXPIRY = str
+DURATION = str
 
 
 class UserState:
@@ -46,7 +46,7 @@ class UserState:
         return f"{self.expiry}y_{self.duration}"
 
     @classmethod
-    def extract_age(cls, user_input: str) -> Optional[int]:
+    def extract_age(cls, user_input: str) -> int | None:
         age_match = re.search(r"(\d+)세", user_input)
         if age_match:
             return int(age_match.group(1))
