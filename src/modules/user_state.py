@@ -1,5 +1,5 @@
 import re
-from typing import Optional
+from typing import Any, Optional
 
 from options.enums import ProductType, Sex, product_type_mapping_table, sex_mapping_table
 
@@ -46,27 +46,27 @@ class UserState:
         return f"{self.expiry}y_{self.duration}"
 
     @classmethod
-    def extract_age(cls, user_input: str) -> None:
+    def extract_age(cls, user_input: str) -> Any:
         age_match = re.search(r"(\d+)세", user_input)
         if age_match:
             return int(age_match.group(1))
 
     @classmethod
-    def extract_sex(cls, user_input: str) -> None:
+    def extract_sex(cls, user_input: str) -> Any:
         if re.search(r"(남성|남자)", user_input):
             return Sex.MALE
         if re.search(r"(여성|여자)", user_input):
             return Sex.FEMALE
 
     @classmethod
-    def extract_product_type(cls, user_input: str) -> None:
+    def extract_product_type(cls, user_input: str) -> Any:
         if product_type_mapping_table[ProductType.NON_REFUND] in user_input:
             return ProductType.NON_REFUND
         if product_type_mapping_table[ProductType.REFUND] in user_input:
             return ProductType.REFUND
 
     @classmethod
-    def extract_expiry_and_duration(cls, user_input: str) -> None:
+    def extract_expiry_and_duration(cls, user_input: str) -> Any:
         period_match = re.search(r"(\d+)년[/\s](\d+)세", user_input)
         if period_match:
             expiry: EXPIRY = int(period_match.group(1))
