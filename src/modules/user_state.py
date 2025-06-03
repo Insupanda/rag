@@ -66,7 +66,7 @@ class UserState:
             return ProductType.REFUND
 
     @classmethod
-    def extract_expiry_and_duration(cls, user_input: str) -> tuple[EXPIRY, DURATION]:
+    def extract_expiry_and_duration(cls, user_input: str) -> Optional[tuple[EXPIRY, DURATION]]:
         period_match = re.search(r"(\d+)년[/\s](\d+)세", user_input)
         if period_match:
             expiry: EXPIRY = period_match.group(1)
