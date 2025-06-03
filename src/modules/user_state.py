@@ -46,13 +46,13 @@ class UserState:
         return f"{self.expiry}y_{self.duration}"
 
     @classmethod
-    def extract_age(cls, user_input: str) -> Optional[int]:
+    def extract_age(cls, user_input: str) -> None:
         age_match = re.search(r"(\d+)세", user_input)
         if age_match:
             return int(age_match.group(1))
 
     @classmethod
-    def extract_sex(cls, user_input: str) -> Optional[Sex]:
+    def extract_sex(cls, user_input: str) -> None:
         if re.search(r"(남성|남자)", user_input):
             return Sex.MALE
         if re.search(r"(여성|여자)", user_input):
@@ -66,7 +66,7 @@ class UserState:
             return ProductType.REFUND
 
     @classmethod
-    def extract_expiry_and_duration(cls, user_input: str) -> tuple[EXPIRY, DURATION]:
+    def extract_expiry_and_duration(cls, user_input: str) -> None:
         period_match = re.search(r"(\d+)년[/\s](\d+)세", user_input)
         if period_match:
             expiry: EXPIRY = int(period_match.group(1))
