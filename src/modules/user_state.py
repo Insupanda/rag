@@ -59,19 +59,19 @@ class UserState:
             return Sex.FEMALE
 
     @classmethod
-    def extract_product_type(cls, user_input: str) -> Optional[ProductType]:
+    def extract_product_type(cls, user_input: str) -> None:
         if product_type_mapping_table[ProductType.NON_REFUND] in user_input:
             return ProductType.NON_REFUND
         if product_type_mapping_table[ProductType.REFUND] in user_input:
             return ProductType.REFUND
 
     @classmethod
-    def extract_expiry_and_duration(cls, user_input: str) -> Optional[tuple[EXPIRY, DURATION]]:
+    def extract_expiry_and_duration(cls, user_input: str) -> tuple[EXPIRY, DURATION]:
         period_match = re.search(r"(\d+)년[/\s](\d+)세", user_input)
         if period_match:
             expiry: EXPIRY = period_match.group(1)
             duration: DURATION = period_match.group(2)
-            return expiry, duration
+            return int(expiry), int(duration)
 
     def update_by_user_input(self, user_input: str) -> None:
         self.insu_age = UserState.extract_age(user_input)
