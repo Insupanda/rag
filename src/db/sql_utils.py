@@ -1,4 +1,5 @@
 import mysql.connector
+import simplejson as json
 from jinja2 import Environment, FileSystemLoader
 
 from config.settings import Settings, settings
