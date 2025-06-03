@@ -10,9 +10,9 @@ DURATION = str
 class UserState:
     def __init__(self):
         self.custom_name: str = "홍길동"
-        self.insu_age: int = 25
-        self.insu_sex: Sex = Sex.MALE
-        self.product_type: ProductType = ProductType.NON_REFUND
+        self.insu_age: Optional[int] = 25
+        self.insu_sex: Optional[Sex] = Sex.MALE
+        self.product_type: Optional[ProductType] = ProductType.NON_REFUND
         self.expiry: int = 20
         self.duration: int = 100
 
@@ -46,7 +46,7 @@ class UserState:
         return f"{self.expiry}y_{self.duration}"
 
     @classmethod
-    def extract_age(cls, user_input: str) -> int | None:
+    def extract_age(cls, user_input: str) -> Optional[int]:
         age_match = re.search(r"(\d+)세", user_input)
         if age_match:
             return int(age_match.group(1))
