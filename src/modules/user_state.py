@@ -3,8 +3,8 @@ from typing import Optional
 
 from options.enums import ProductType, Sex, product_type_mapping_table, sex_mapping_table
 
-EXPIRY = str
-DURATION = str
+EXPIRY = int
+DURATION = int
 
 
 class UserState:
