@@ -3,8 +3,8 @@ from typing import Any, Optional
 
 from options.enums import ProductType, Sex, product_type_mapping_table, sex_mapping_table
 
-EXPIRY = str
-DURATION = str
+EXPIRY = int
+DURATION = int
 
 
 class UserState:
@@ -71,11 +71,11 @@ class UserState:
         user_input: str,
         expiry: int = 20,
         duration: int = 100,
-    ) -> Any:
+    ) -> tuple[EXPIRY, DURATION]:
         period_match = re.search(r"(\d+)년[/\s](\d+)세", user_input)
         if period_match:
-            expiry: EXPIRY = period_match.group(1)
-            duration: DURATION = period_match.group(2)
+            expiry = int(period_match.group(1))
+            duration = int(period_match.group(2))
             return expiry, duration
         return expiry, duration
 
