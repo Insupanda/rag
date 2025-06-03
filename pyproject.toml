@@ -9,5 +9,5 @@ src_paths = ["src", "."]
 [tool.mypy]
 ignore_missing_imports = true
 
-[mypy-simplejson]
+[tool.mypy.simplejson]
 ignore_missing_imports = true
