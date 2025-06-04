@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import Optional, TypedDict
 
 import faiss
 
@@ -8,8 +8,8 @@ DocId = str
 
 
 class DocIDMetadata(TypedDict):
-    header1: str
-    source: str
+    header1: Optional[str]
+    source: Optional[str]
     text: str
 
 

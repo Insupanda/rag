@@ -72,6 +72,7 @@ class FaissSearch:
 
         if distances.ndim == 2 and distances.shape[0] == 1:
             distances = distances[0]
+
         if indices.ndim == 2 and indices.shape[0] == 1:
             indices = indices[0]
 
@@ -80,36 +81,36 @@ class FaissSearch:
                 raise ValueError("인덱스에 해당하는 메타데이터 결과가 없습니다.")
 
             doc_id = str(index)
-            if doc_id in metadata:
-                doc_metadata = metadata[doc_id]
-                collection_results.append(
-                    {
-                        "collection": collection_filename,
-                        "doc_id": doc_id,
-                        "score": float(dist),
-                        "metadata": doc_metadata,
-                    }
-                )
 
             if doc_id not in metadata:
                 raise ValueError(f"메타데이터에서 키 {doc_id} 찾을 수 없습니다.")
+
+            doc_metadata = metadata[doc_id]
+            collection_results.append(
+                {
+                    "collection": collection_filename,
+                    "doc_id": doc_id,
+                    "score": float(dist),
+                    "metadata": doc_metadata,
+                }
+            )
         return collection_results
 
     def get_results(self) -> list[dict[DocIds, DocIDMetadata]]:
-        print("\n-------- 벡터 검색 시작 --------")
+        logging.info("\n-------- 벡터 검색 시작 --------")
         logging.info(f"쿼리: '{self.query}'")
         logging.info(f"대상 컬렉션: {[collection['name'] for collection in self.target_collections]}")
         logging.info(f"각 컬렉션당 top_k: {self.top_k}\n")
+
         if not self.collections or not self.target_collections:
             return [self.default_document]
 
         total_collection_result: list[dict[DocIds, DocIDMetadata]] = []
         query_embedding = upembedding.get_upstage_embedding(self.query)
 
-        if isinstance(query_embedding, list):
-            query_embedding = np.array(query_embedding, dtype=np.float32).reshape(1, -1)
         if len(query_embedding.shape) == 1:
             query_embedding = query_embedding.reshape(1, -1)
+
         for collection in self.target_collections:
             index = collection["index"]
             metadata = collection["metadata"]
@@ -119,5 +120,5 @@ class FaissSearch:
             collection_results = self.search_metadata_by_index(score, indices, metadata, collection_name)
             total_collection_result.extend(collection_results)
         logging.info(f"\n총 {len(total_collection_result)}개 청크 검색됨")
-        print("-------- 벡터 검색 완료 --------\n")
+        logging.info("-------- 벡터 검색 완료 --------\n")
         return total_collection_result if total_collection_result else [self.default_document]
