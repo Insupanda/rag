@@ -87,7 +87,7 @@ class FaissSearch:
 
             if doc_id not in metadata:
                 raise ValueError(f"메타데이터에서 키 {doc_id} 찾을 수 없습니다.")
-        self.total_collection_result.extend(collection_results)
+        return collection_results
 
     def get_results(self) -> list[dict[DocIds, DocIDMetadata]]:
         print("\n-------- 벡터 검색 시작 --------")
@@ -97,7 +97,7 @@ class FaissSearch:
         if not self.collections or not self.target_collections:
             return [self.default_document]
 
-        self.total_collection_result: list[dict[DocIds, DocIDMetadata]] = []
+        total_collection_result: list[dict[DocIds, DocIDMetadata]] = []
         query_embedding = upembedding.get_upstage_embedding(self.query)
 
         if isinstance(query_embedding, list):
@@ -110,7 +110,8 @@ class FaissSearch:
             collection_name = collection["name"]
             query_embedding = self.pad_embedding(query_embedding, index)
             score, indices = self.search_L2_index_by_query(index, query_embedding)
-            self.search_metadata_by_index(score, indices, metadata, collection_name)
-        logging.info(f"\n총 {len(self.total_collection_result)}개 청크 검색됨")
+            collection_results = self.search_metadata_by_index(score, indices, metadata, collection_name)
+            total_collection_result.extend(collection_results)
+        logging.info(f"\n총 {len(total_collection_result)}개 청크 검색됨")
         print("-------- 벡터 검색 완료 --------\n")
-        return self.total_collection_result if self.total_collection_result else [self.default_document]
+        return total_collection_result if total_collection_result else [self.default_document]
