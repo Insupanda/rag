@@ -69,7 +69,13 @@ class FaissSearch:
     ) -> list[OrganizedCollection]:
         print(f"검색 중: {collection_filename} 컬렉션")
         collection_results: list[OrganizedCollection] = []
-        for i, (index, dist) in enumerate(zip(indices[0], distances[0])):
+
+        if distances.ndim == 2 and distances.shape[0] == 1:
+            distances = distances[0]
+        if indices.ndim == 2 and indices.shape[0] == 1:
+            indices = indices[0]
+
+        for index, dist in zip(indices, distances):
             if index == -1:
                 raise ValueError("인덱스에 해당하는 메타데이터 결과가 없습니다.")
 
