@@ -66,7 +66,7 @@ class FaissSearch:
         indices: np.ndarray,
         metadata: dict[DocIds, DocIDMetadata],
         collection_filename: str,
-    ) -> None:
+    ) -> list[OrganizedCollection]:
         print(f"검색 중: {collection_filename} 컬렉션")
         collection_results: list[OrganizedCollection] = []
         for i, (index, dist) in enumerate(zip(indices[0], distances[0])):
