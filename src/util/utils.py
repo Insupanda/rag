@@ -36,7 +36,7 @@ class QueryInfoExtract:
 
     def process(self):
         self.extract_age()
-        self.extract_gender()
+        self.extract_sex()
         self.extract_product_type()
         self.extract_insu_period()
         return self.prompt, self.current_state
