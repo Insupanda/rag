@@ -11,9 +11,6 @@ class InsuranceService:
         self.openai_client = openai_client
         self.template_manager = template_manager
 
-    def __get_user_input(self) -> str:
-        return input("질문을 입력하세요 (종료하려면 'q', 'quit', 'exit' 입력):\n").strip()
-
     def __handle_user_input(self, user_input: str) -> Any:
         intent_handler = IntentHandler(self.openai_client, self.template_manager)
         intent = intent_handler.handle(user_input)
