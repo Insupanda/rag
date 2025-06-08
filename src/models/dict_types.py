@@ -3,7 +3,6 @@ from typing import Optional, TypedDict
 import faiss
 
 InsuFileName = str
-DocIds = str
 DocId = str
 
 
@@ -16,7 +15,7 @@ class DocIDMetadata(TypedDict):
 class RawCollection(TypedDict):
     name: InsuFileName
     index: faiss.Index
-    metadata: dict[DocIds, DocIDMetadata]
+    metadata: dict[DocId, DocIDMetadata]
 
 
 class OrganizedCollection(TypedDict):
