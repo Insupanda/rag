@@ -34,6 +34,7 @@ class FaissSearch:
             for collection in total_collections
             if not collection_names or collection["name"] in collection_names
         ]
+        self.logger = logging.getLogger(self.__class__.__name__)
         self.top_k = top_k
 
     def pad_embedding(
@@ -68,16 +69,16 @@ class FaissSearch:
         metadata: dict[DocId, DocIDMetadata],
         collection_filename: str,
     ) -> list[OrganizedCollection]:
-        logger.info(f"검색 중: {collection_filename} 컬렉션")
+        self.logger.info(f"검색 중: {collection_filename} 컬렉션")
         collection_results: list[OrganizedCollection] = []
         for index, dist in zip(indices, distances):
             if index == -1:
-                logger.error(f"{index}인덱스에 해당하는 결과가 없습니다.")
+                self.logger.error(f"{index}인덱스에 해당하는 결과가 없습니다.")
 
             doc_id = str(index)
 
             if doc_id not in metadata:
-                logger.error(f"메타데이터에서 키 {doc_id} 찾을 수 없습니다.")
+                self.logger.error(f"메타데이터에서 키 {doc_id} 찾을 수 없습니다.")
 
             doc_metadata = metadata[doc_id]
             collection_results.append(
@@ -91,10 +92,10 @@ class FaissSearch:
         return collection_results
 
     def get_results(self) -> list[dict[DocId, DocIDMetadata]]:
-        logger.info("\n-------- 벡터 검색 시작 --------")
-        logger.info(f"쿼리: '{self.query}'")
-        logger.info(f"대상 컬렉션: {[collection['name'] for collection in self.target_collections]}")
-        logger.info(f"각 컬렉션당 top_k: {self.top_k}\n")
+        self.logger.info("\n-------- 벡터 검색 시작 --------")
+        self.logger.info(f"쿼리: '{self.query}'")
+        self.logger.info(f"대상 컬렉션: {[collection['name'] for collection in self.target_collections]}")
+        self.logger.info(f"각 컬렉션당 top_k: {self.top_k}\n")
 
         if not self.collections or not self.target_collections:
             return [self.default_document]
@@ -110,6 +111,6 @@ class FaissSearch:
             score, indices = self.search_L2_index_by_query(index, query_embedding)
             collection_results = self.search_metadata_by_index(score, indices, metadata, collection_name)
             total_collection_result.extend(collection_results)
-        logger.info(f"\n총 {len(total_collection_result)}개 청크 검색됨")
-        logger.info("-------- 벡터 검색 완료 --------\n")
+        self.logger.info(f"\n총 {len(total_collection_result)}개 청크 검색됨")
+        self.logger.info("-------- 벡터 검색 완료 --------\n")
         return total_collection_result if total_collection_result else [self.default_document]
