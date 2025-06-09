@@ -2,12 +2,12 @@ import logging
 
 import faiss
 import numpy as np
+from numpy.typing import NDArray
 
 from config.settings import settings
-from models.dict_types import DocIDMetadata, OrganizedCollection, RawCollection
+from models.dict_types import DocId, DocIDMetadata, OrganizedCollection, RawCollection
 from models.embeddings import UpstageEmbedding
 
-DocIds = str
 InsuFileNames = str
 logging.basicConfig(level=logging.INFO)
 upembedding = UpstageEmbedding(settings.upstage_api_key)
@@ -36,8 +36,9 @@ class FaissSearch:
         ]
         self.top_k = top_k
 
-    def pad_embedding(self, query_embedding: np.ndarray, index: faiss.Index) -> np.ndarray:
-        query_dim = query_embedding.shape[1]
+    def pad_embedding(
+        self, query_embedding: NDArray[np.float32], index: faiss.Index, query_dim: int
+    ) -> NDArray[np.float32]:
         index_dim = index.d
 
         if query_dim == index_dim:
@@ -48,42 +49,35 @@ class FaissSearch:
             padded_embedding[0, :query_dim] = query_embedding[0, :]
             return padded_embedding
 
-        trimmed_embedding = query_embedding[0, :index_dim].reshape(1, -1)
+        trimmed_embedding = query_embedding[0, :index_dim]
         return trimmed_embedding
 
     def search_L2_index_by_query(
-        self, index: faiss.Index, query_embedding: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray]:
+        self, index: faiss.Index, query_embedding: NDArray[np.float32]
+    ) -> tuple[NDArray[np.float32], NDArray[np.int64]]:
         faiss.normalize_L2(query_embedding)
 
         distance, indices = index.search(query_embedding, self.top_k)
         distance = np.minimum(distance, 1.0)
-        return distance, indices
+        return distance[0], indices[0]
 
     def search_metadata_by_index(
         self,
-        distances: np.ndarray,
-        indices: np.ndarray,
-        metadata: dict[DocIds, DocIDMetadata],
+        distances: NDArray[np.float32],
+        indices: NDArray[np.int64],
+        metadata: dict[DocId, DocIDMetadata],
         collection_filename: str,
     ) -> list[OrganizedCollection]:
-        print(f"검색 중: {collection_filename} 컬렉션")
+        logging.info(f"검색 중: {collection_filename} 컬렉션")
         collection_results: list[OrganizedCollection] = []
-
-        if distances.ndim == 2 and distances.shape[0] == 1:
-            distances = distances[0]
-
-        if indices.ndim == 2 and indices.shape[0] == 1:
-            indices = indices[0]
-
         for index, dist in zip(indices, distances):
             if index == -1:
-                raise ValueError("인덱스에 해당하는 메타데이터 결과가 없습니다.")
+                logging.error(f"{index}인덱스에 해당하는 결과가 없습니다.")
 
             doc_id = str(index)
 
             if doc_id not in metadata:
-                raise ValueError(f"메타데이터에서 키 {doc_id} 찾을 수 없습니다.")
+                logging.error(f"메타데이터에서 키 {doc_id} 찾을 수 없습니다.")
 
             doc_metadata = metadata[doc_id]
             collection_results.append(
@@ -96,7 +90,7 @@ class FaissSearch:
             )
         return collection_results
 
-    def get_results(self) -> list[dict[DocIds, DocIDMetadata]]:
+    def get_results(self) -> list[dict[DocId, DocIDMetadata]]:
         logging.info("\n-------- 벡터 검색 시작 --------")
         logging.info(f"쿼리: '{self.query}'")
         logging.info(f"대상 컬렉션: {[collection['name'] for collection in self.target_collections]}")
@@ -105,17 +99,14 @@ class FaissSearch:
         if not self.collections or not self.target_collections:
             return [self.default_document]
 
-        total_collection_result: list[dict[DocIds, DocIDMetadata]] = []
+        total_collection_result: list[dict[DocId, DocIDMetadata]] = []
         query_embedding = upembedding.get_upstage_embedding(self.query)
-
-        if len(query_embedding.shape) == 1:
-            query_embedding = query_embedding.reshape(1, -1)
-
+        query_dim = query_embedding.shape[1]
         for collection in self.target_collections:
             index = collection["index"]
             metadata = collection["metadata"]
             collection_name = collection["name"]
-            query_embedding = self.pad_embedding(query_embedding, index)
+            query_embedding = self.pad_embedding(query_embedding, index, query_dim)
             score, indices = self.search_L2_index_by_query(index, query_embedding)
             collection_results = self.search_metadata_by_index(score, indices, metadata, collection_name)
             total_collection_result.extend(collection_results)
