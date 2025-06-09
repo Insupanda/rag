@@ -89,6 +89,3 @@ class UserState:
             instance.duration = duration
 
         return instance
-
-
-user_state = UserState()

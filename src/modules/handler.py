@@ -10,7 +10,7 @@ from models.collection_loader import CollectionLoader
 from models.embeddings import UpstageEmbedding
 from models.generate_answer import PolicyResponse
 from models.search import search
-from modules.user_state import UserState, user_state
+from modules.user_state import UserState
 from options.enums import IntentType, ModelType
 from util.utils import find_matching_collections
 
@@ -50,7 +50,7 @@ class CompareHandler(Handler):
         template_manager: TemplateManager,
         execute_query: QueryExecutor,
         sql_generator: SQLGenerator,
-        user_state: UserState = user_state,
+        user_state: UserState,
     ):
         super().__init__(openai_client, template_manager)
         self.user_state = copy.copy(user_state)
@@ -107,13 +107,15 @@ class PolicyHandler(Handler):
 
 class HandlerFactory:
     @staticmethod
-    def get_handler(intent: str, openai_client: OpenAI, template_manager: TemplateManager) -> Handler:
+    def get_handler(
+        intent: str, openai_client: OpenAI, template_manager: TemplateManager, user_state: UserState
+    ) -> Handler:
         generate_sql_query = SQLGenerator(openai_client, template_manager)
         query_executor = QueryExecutor(openai_client, template_manager)
         collection_loader = CollectionLoader(settings.vector_path, UpstageEmbedding)
         response_policy = PolicyResponse(openai_client)
         if intent == IntentType.COMPARE_QUESTION:
-            return CompareHandler(openai_client, template_manager, query_executor, generate_sql_query)
+            return CompareHandler(openai_client, template_manager, query_executor, generate_sql_query, user_state)
         if intent == IntentType.POLICY_QUESTION:
             return PolicyHandler(openai_client, template_manager, collection_loader, response_policy)
         raise ValueError("올바른 intent type이 아닙니다.")
