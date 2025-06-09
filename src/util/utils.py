@@ -85,7 +85,7 @@ def find_matching_collections(user_input: str, available_collections: list[InsuF
             matched_collections.update(list(insu_match.values()))
 
     # 중복 제거
-    matched_collections_list: list[str] = list(matched_collections)
+    matched_collections_list: list[InsuFileName] = list(matched_collections)
 
     print(f"최종 매칭된 컬렉션: {matched_collections_list}")
     print("-------- 컬렉션 매칭 완료 --------\n")
