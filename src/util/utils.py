@@ -1,4 +1,3 @@
-import copy
 import re
 
 from langchain.prompts import PromptTemplate
@@ -6,7 +5,6 @@ from langchain_core.output_parsers import JsonOutputParser
 from langchain_openai import ChatOpenAI
 
 from config.settings import settings
-from modules.user_state import UserState
 from options.enums import ModelType
 from options.insu_name import insu_match
 
@@ -14,27 +12,6 @@ InsuCompanyName = str
 InsuKeywords = list[str]
 InsuFileName = str
 CANCER = "암"
-
-
-class QueryInfoExtractor(UserState):
-    def __init__(self, user_input: str, user_state: UserState):
-        super().__init__()
-        self.user_input = user_input
-        self.current_state = copy.copy(user_state)
-
-    def update_by_user_input(self) -> UserState:
-        super().update_by_user_input(self.user_input)
-        if self.insu_age is not None:
-            self.current_state.insu_age = self.insu_age
-        if self.insu_sex is not None:
-            self.current_state.insu_sex = self.insu_sex
-        if self.product_type is not None:
-            self.current_state.product_type = self.product_type
-        if self.expiry is not None:
-            self.current_state.expiry = self.expiry
-        if self.duration is not None:
-            self.current_state.duration = self.duration
-        return self.current_state
 
 
 def insurance_keywords_mapping() -> dict[InsuCompanyName, InsuKeywords]:

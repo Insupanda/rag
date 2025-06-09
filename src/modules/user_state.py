@@ -17,7 +17,7 @@ class UserState:
         self.duration: int = 100
 
     def __repr__(self) -> str:
-        sex = "남자" if self.insu_sex == Sex.MALE else "여자"
+        sex = sex_mapping_table[Sex.MALE] if self.insu_sex == Sex.MALE else sex_mapping_table[Sex.FEMALE]
         product_type = "무해지형" if self.product_type == ProductType.NON_REFUND else "해지환급형"
         return (
             "\n=== 실행 결과 ===\n"
@@ -27,18 +27,6 @@ class UserState:
             f"성별: {sex}\n"
             f"상품유형: {product_type}\n"
             f"보험기간: {self.expiry_year}"
-        )
-
-    @property
-    def display_insu_sex(self) -> str:
-        return sex_mapping_table[Sex.MALE] if self.insu_sex == Sex.MALE else sex_mapping_table[Sex.FEMALE]
-
-    @property
-    def display_product_type(self) -> str:
-        return (
-            product_type_mapping_table[ProductType.NON_REFUND]
-            if self.product_type == ProductType.NON_REFUND
-            else product_type_mapping_table[ProductType.REFUND]
         )
 
     @property
@@ -79,11 +67,28 @@ class UserState:
             return expiry, duration
         return expiry, duration
 
-    def update_by_user_input(self, user_input: str) -> None:
-        self.insu_age = UserState.extract_age(user_input)
-        self.insu_sex = UserState.extract_sex(user_input)
-        self.product_type = UserState.extract_product_type(user_input)
-        self.expiry, self.duration = UserState.extract_expiry_and_duration(user_input)
+    @classmethod
+    def update_by_user_input_none(cls, instance: "UserState", user_input: str) -> "UserState":
+        age = cls.extract_age(user_input)
+        if age is not None:
+            instance.insu_age = age
+
+        sex = cls.extract_sex(user_input)
+        if sex is not None:
+            instance.insu_sex = sex
+
+        product_type = cls.extract_product_type(user_input)
+        if product_type is not None:
+            instance.product_type = product_type
+
+        expiry, duration = cls.extract_expiry_and_duration(user_input)
+        if expiry is not None:
+            instance.expiry = expiry
+
+        if duration is not None:
+            instance.duration = duration
+
+        return instance
 
 
 user_state = UserState()

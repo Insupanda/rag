@@ -1,3 +1,4 @@
+import copy
 import os
 from abc import ABC, abstractmethod
 
@@ -11,7 +12,7 @@ from models.generate_answer import PolicyResponse
 from models.search import search
 from modules.user_state import UserState, user_state
 from options.enums import IntentType, ModelType
-from util.utils import QueryInfoExtractor, find_matching_collections
+from util.utils import find_matching_collections
 
 
 class Handler(ABC):
@@ -52,7 +53,7 @@ class CompareHandler(Handler):
         user_state: UserState = user_state,
     ):
         super().__init__(openai_client, template_manager)
-        self.user_state = user_state
+        self.user_state = copy.copy(user_state)
         self.sql_generator = sql_generator
         self.execute_query = execute_query
 
@@ -60,8 +61,7 @@ class CompareHandler(Handler):
         print(repr(user_state))
 
     def handle(self, user_input: str) -> str:
-        extract_query = QueryInfoExtractor(user_input, self.user_state)
-        curr_user_state = extract_query.update_by_user_input()
+        curr_user_state = UserState.update_by_user_input_none(self.user_state, user_input)
         self.user_state = curr_user_state
         generated_sql = self.sql_generator.generate(user_input, self.user_state)
         self.print_settings(self.user_state)
