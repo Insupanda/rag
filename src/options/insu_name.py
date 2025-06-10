@@ -2,8 +2,16 @@ from typing import TypedDict
 
 
 class InsuMatch(TypedDict):
-    insu_company_name: str
-    insu_filename: str
+    DB손해보험: str
+    삼성화재: str
+    하나손해보험: str
+    한화손해보험: str
+    흥국화재: str
+    현대해상: str
+    KB손해보험: str
+    롯데손해보험: str
+    메리츠화재: str
+    NH농협손해보험: str
 
 
 insu_match: InsuMatch = {
@@ -19,3 +27,6 @@ insu_match: InsuMatch = {
     "메리츠화재": "Meritz_YakMu220250113",
     "NH농협손해보험": "NH_YakMuN5250120250101",
 }
+
+nh_keywords = ["NH농협손해보험", "NH손해보험", "농협손해보험", "NH손보", "농협손보", "NH", "농협"]
+db_keywords = ["db손해보험", "db손해", "db보험", "db", "디비손해보험", "디비"]

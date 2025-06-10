@@ -6,7 +6,7 @@ from langchain_openai import ChatOpenAI
 
 from config.settings import settings
 from options.enums import ModelType
-from options.insu_name import insu_match
+from options.insu_name import db_keywords, insu_match, nh_keywords
 
 InsuCompanyName = str
 InsuKeywords = list[str]
@@ -25,15 +25,20 @@ def insurance_keywords_mapping() -> dict[InsuCompanyName, InsuKeywords]:
     영어약자는 {insu_filename}에서 _기준으로 앞부분을 참고하세요.
     반환 형태를 key: value 형식인 JSON 형식으로 출력하세요.
 
-    "NH농협손해보험": ["NH농협손해보험", "NH손해보험", "농협손해보험", "NH손보", "농협손보", "NH", "농협"],
-    "DB손해보험": ["db손해보험", "db손해", "db보험", "db", "디비손해보험", "디비"],
+    "NH농협손해보험": {nh_keywords},
+    "DB손해보험": {db_keywords},
     {keywords}:
     """.strip()
     )
 
     result = keyword_chain_template | gpt4o | JsonOutputParser()
     mapping_dict = result.invoke(
-        {"insu_filename": insu_filename, "keywords": lambda obj: [print(k) for k in obj.__dict__.keys()]}
+        {
+            "insu_filename": insu_filename,
+            "keywords": lambda obj: [print(k) for k in obj.__dict__.keys()],
+            "nh_keywords": nh_keywords,
+            "db_keywords": db_keywords,
+        }
     )
     return mapping_dict
 
