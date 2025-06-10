@@ -10,6 +10,7 @@ class InsuMatch(TypedDict):
     현대해상: str
     KB손해보험: str
     롯데손해보험: str
+    MG손해보험: str
     메리츠화재: str
     NH농협손해보험: str
 
