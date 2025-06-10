@@ -9,7 +9,6 @@ from models.dict_types import DocId, DocIDMetadata, OrganizedCollection, RawColl
 from models.embeddings import UpstageEmbedding
 
 InsuFileNames = str
-logger = logging.getLogger(__name__)
 upembedding = UpstageEmbedding(settings.upstage_api_key)
 
 
