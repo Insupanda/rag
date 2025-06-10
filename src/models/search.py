@@ -91,10 +91,10 @@ class FaissSearch:
         return collection_results
 
     def get_results(self) -> list[dict[DocId, DocIDMetadata]]:
-        self.logger.info("\n-------- 벡터 검색 시작 --------")
+        self.logger.info("-------- 벡터 검색 시작 --------")
         self.logger.info(f"쿼리: '{self.query}'")
         self.logger.info(f"대상 컬렉션: {[collection['name'] for collection in self.target_collections]}")
-        self.logger.info(f"각 컬렉션당 top_k: {self.top_k}\n")
+        self.logger.info(f"각 컬렉션당 top_k: {self.top_k}")
 
         if not self.collections or not self.target_collections:
             return [self.default_document]
@@ -110,6 +110,6 @@ class FaissSearch:
             score, indices = self.search_L2_index_by_query(index, query_embedding)
             collection_results = self.search_metadata_by_index(score, indices, metadata, collection_name)
             total_collection_result.extend(collection_results)
-        self.logger.info(f"\n총 {len(total_collection_result)}개 청크 검색됨")
-        self.logger.info("-------- 벡터 검색 완료 --------\n")
+        self.logger.info(f"총 {len(total_collection_result)}개 청크 검색됨")
+        self.logger.info("-------- 벡터 검색 완료 --------")
         return total_collection_result if total_collection_result else [self.default_document]
