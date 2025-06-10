@@ -71,13 +71,12 @@ class FaissSearch:
         self.logger.info(f"검색 중: {collection_filename} 컬렉션")
         collection_results: list[OrganizedCollection] = []
         for index, dist in zip(indices, distances):
-            if index == -1:
-                self.logger.error(f"{index}인덱스에 해당하는 결과가 없습니다.")
-
             doc_id = str(index)
 
-            if doc_id not in metadata:
-                self.logger.error(f"메타데이터에서 키 {doc_id} 찾을 수 없습니다.")
+            if doc_id not in metadata or index == -1:
+                logging.warning(f"메타데이터에서 키 {doc_id} 찾을 수 없습니다.")
+                collection_results.append(self.default_document)
+                continue
 
             doc_metadata = metadata[doc_id]
             collection_results.append(
