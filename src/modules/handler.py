@@ -10,6 +10,7 @@ from models.collection_loader import CollectionLoader
 from models.embeddings import UpstageEmbedding
 from models.generate_answer import PolicyResponse
 from models.search import FaissSearch
+from modules.user_state import UserState
 from options.enums import IntentType, ModelType
 from util.utils import find_matching_collections
 
