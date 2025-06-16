@@ -46,10 +46,10 @@ class FaissSearch:
 
         if query_dim < index_dim:
             padded_embedding = np.zeros((1, index_dim), dtype=query_embedding.dtype)
-            padded_embedding[0, :query_dim] = query_embedding[0, :].reshape(1, -1)
+            padded_embedding[0, :query_dim] = query_embedding[0, :]
             return padded_embedding
 
-        trimmed_embedding = query_embedding[0, :index_dim]
+        trimmed_embedding = query_embedding[0, :index_dim].reshape(1, -1)
         return trimmed_embedding
 
     def search_L2_index_by_query(
