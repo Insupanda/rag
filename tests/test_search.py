@@ -5,7 +5,7 @@ from src.models.search import FaissSearch
 
 
 class FaissIndex:
-    def __init__(self, d):
+    def __init__(self, d: int):
         self.d = d
 
 
