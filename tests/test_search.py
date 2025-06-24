@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from models.search import FaissSearch
+from src.models.search import FaissSearch
 
 
 class FaissIndex:
