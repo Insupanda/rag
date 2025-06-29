@@ -1,12 +1,18 @@
 import numpy as np
 import pytest
+from numpy.typing import NDArray
 
 from src.models.search import FaissSearch
 
 
-class FaissIndex:
-    def __init__(self, d: int):
+class DummyIndex:
+    def __init__(self, d: int, distances: NDArray[np.float32], indices: NDArray[np.int64]):
         self.d = d
+        self._distances = np.array(distances, dtype=np.float32)
+        self._indices = np.array(indices, dtype=np.int64)
+
+    def search(self, query: str, top_k: int) -> tuple[NDArray[np.float32], NDArray[np.int64]]:
+        return self._distances.reshape(1, -1), self._indices.reshape(1, -1)
 
 
 @pytest.mark.parametrize(
@@ -20,8 +26,26 @@ class FaissIndex:
 def test_pad_embedding_shape(query_dim: int, index_dim: int, expected_shape: tuple[int, int]) -> None:
     pytest_search = FaissSearch(query="현대해상의 기본플랜 보험료를 알려줘", total_collections=[])
     query_embedding = np.arange(query_dim, dtype=np.float32).reshape(1, -1)
-    padded = pytest_search.pad_embedding(query_embedding, FaissIndex(index_dim), query_dim)
+    padded = pytest_search.pad_embedding(
+        query_embedding,
+        DummyIndex(
+            d=index_dim,
+            distances=[0.0],
+            indices=[0],
+        ),
+        query_dim,
+    )
     assert padded.shape == expected_shape
+
+
+def test_search_L2_index_by_query_and_clipping():
+    dummy = DummyIndex(d=3, distances=[1.5, 0.8], indices=[2, 3])
+    pytest_search = FaissSearch(query="현대해상의 기본플랜 보험료를 알려줘", total_collections=[], collection_names=[])
+    emb = np.array([[2.0, 0.0, 0.0]], dtype=np.float32)
+    dists, inds = pytest_search.search_L2_index_by_query(dummy, emb)
+    assert np.all(dists <= 1.0)
+    assert dists.shape == (2,)
+    assert inds.shape == (2,)
 
 
 def test_get_results_returns_default_when_no_collections() -> None:
