@@ -36,6 +36,12 @@ def test_pad_embedding_shape(query_dim: int, index_dim: int, expected_shape: tup
         query_dim,
     )
     assert padded.shape == expected_shape
+    if query_dim < index_dim:
+        assert np.all(padded[0, :query_dim] == query_embedding[0])
+    elif query_dim > index_dim:
+        assert np.all(padded[0] == query_embedding[0, :index_dim])
+    else:
+        assert np.all(padded == query_embedding)
 
 
 def test_search_L2_index_by_query_and_clipping() -> None:
