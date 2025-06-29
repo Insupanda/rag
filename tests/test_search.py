@@ -42,10 +42,10 @@ def test_search_L2_index_by_query_and_clipping() -> None:
     dummy = DummyIndex(d=3, distances=[1.5, 0.8], indices=[2, 3])
     search_results = FaissSearch(query="현대해상의 기본플랜 보험료를 알려줘", total_collections=[], collection_names=[])
     emb = np.array([[2.0, 0.0, 0.0]], dtype=np.float32)
-    dists, inds = search_results.search_L2_index_by_query(dummy, emb)
-    assert np.all(dists <= 1.0)
-    assert dists.shape == (2,)
-    assert inds.shape == (2,)
+    distance, indices = search_results.search_L2_index_by_query(dummy, emb)
+    assert np.all(distance <= 1.0)
+    assert distance.shape == (2,)
+    assert indices.shape == (2,)
 
 
 def test_get_results_returns_default_when_no_collections() -> None:
