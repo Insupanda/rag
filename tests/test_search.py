@@ -24,9 +24,9 @@ class DummyIndex:
     ],
 )
 def test_pad_embedding_shape(query_dim: int, index_dim: int, expected_shape: tuple[int, int]) -> None:
-    pytest_search = FaissSearch(query="현대해상의 기본플랜 보험료를 알려줘", total_collections=[])
+    search_results = FaissSearch(query="현대해상의 기본플랜 보험료를 알려줘", total_collections=[])
     query_embedding = np.arange(query_dim, dtype=np.float32).reshape(1, -1)
-    padded = pytest_search.pad_embedding(
+    padded = search_results.pad_embedding(
         query_embedding,
         DummyIndex(
             d=index_dim,
@@ -38,18 +38,24 @@ def test_pad_embedding_shape(query_dim: int, index_dim: int, expected_shape: tup
     assert padded.shape == expected_shape
 
 
-def test_search_L2_index_by_query_and_clipping():
+def test_search_L2_index_by_query_and_clipping() -> None:
     dummy = DummyIndex(d=3, distances=[1.5, 0.8], indices=[2, 3])
-    pytest_search = FaissSearch(query="현대해상의 기본플랜 보험료를 알려줘", total_collections=[], collection_names=[])
+    search_results = FaissSearch(query="현대해상의 기본플랜 보험료를 알려줘", total_collections=[], collection_names=[])
     emb = np.array([[2.0, 0.0, 0.0]], dtype=np.float32)
-    dists, inds = pytest_search.search_L2_index_by_query(dummy, emb)
+    dists, inds = search_results.search_L2_index_by_query(dummy, emb)
     assert np.all(dists <= 1.0)
     assert dists.shape == (2,)
     assert inds.shape == (2,)
 
 
 def test_get_results_returns_default_when_no_collections() -> None:
-    pytest_search = FaissSearch(query="현대해상의 기본플랜 보험료를 알려줘", total_collections=[])
-    result = pytest_search.get_results()
-    assert result[0]["collection"] == "default"
-    assert result[0]["metadata"]["text"] == "로드된 컬렉션이 없습니다."
+    search_results = FaissSearch(query="현대해상의 기본플랜 보험료를 알려줘", total_collections=[])
+    results = search_results.get_results()
+    assert results == [
+        {
+            "collection": "default",
+            "id": "0",
+            "score": 1.0,
+            "metadata": {"text": "로드된 컬렉션이 없습니다."},
+        }
+    ]
