@@ -25,6 +25,6 @@ class InsuranceService:
         user_input = self.__get_user_input()
         self.__handle_user_input(user_input)
 
-    def get_user_response(self, user_input) -> str:
+    def get_user_response(self, user_input: str) -> str:
         response = self.__handle_user_input(user_input)
         return response
