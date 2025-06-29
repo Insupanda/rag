@@ -1,5 +1,3 @@
-from typing import Any
-
 from openai import OpenAI
 
 from db.sql_utils import TemplateManager
@@ -16,18 +14,17 @@ class InsuranceService:
     def __get_user_input(self) -> str:
         return input("질문을 입력하세요 (종료하려면 'q', 'quit', 'exit' 입력):\n").strip()
 
-    def __handle_user_input(self, user_input: str) -> Any:
+    def __handle_user_input(self, user_input: str) -> str:
         intent_handler = IntentHandler(self.openai_client, self.template_manager)
         intent = intent_handler.handle(user_input)
-
         handler = HandlerFactory.get_handler(intent, self.openai_client, self.template_manager, self.user_state)
         response = handler.handle(user_input)
         return response
 
-    def run(self) -> Any:
+    def run(self) -> None:
         user_input = self.__get_user_input()
         self.__handle_user_input(user_input)
 
-    def get_user_response(self, user_input) -> Any:
+    def get_user_response(self, user_input) -> str:
         response = self.__handle_user_input(user_input)
         return response
