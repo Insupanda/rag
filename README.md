@@ -18,7 +18,7 @@ rag/
 ├── poc/                            # 초기 레거시 코드
 ├── src/                            # 소스 코드
 │   ├── config/                     # 설정 폴더
-│   │   ├── logger.py
+│   │   ├── logger.py               # 로거 파일
 │   │   └── settings.py
 │   ├── db/                         # DB 폴더
 │   │   ├── schema.py
@@ -30,7 +30,7 @@ rag/
 │   │   ├── search.py               # 검색 파일
 │   │   └── embeddings.py           # 임베딩 파일
 │   ├── modules/
-│   │   ├── user_state.py
+│   │   ├── user_state.py           # 사용자 정보
 │   │   └── handler.py              # 보험약관질의 모듈
 │   ├── options/
 │   │   └── enums.py
@@ -48,8 +48,8 @@ rag/
 │   │   └── ...
 │   └── main.py
 ├── tests/
-│   ├── test_search.py
-│   └── test_collection_loader.py
+│   ├── test_search.py              # search.py 테스트
+│   └── test_collection_loader.py   # collection_loader 테스트
 ├── .gitignore
 ├── README.md
 └── requirements.txt
@@ -97,7 +97,7 @@ RAG 모듈을 직접 실행하려면:
 
 ```bash
 cd /rag
-python chainlit run src/main.py
+chainlit run src/main.py -w
 ```
 
 ## How to Test
