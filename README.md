@@ -18,16 +18,19 @@ rag/
 ├── poc/                            # 초기 레거시 코드
 ├── src/                            # 소스 코드
 │   ├── config/                     # 설정 폴더
+│   │   ├── logger.py
 │   │   └── settings.py
 │   ├── db/                         # DB 폴더
 │   │   ├── schema.py
 │   │   └── sql_utils.py
 │   ├── models/
 │   │   ├── collection_loader.py    # 콜렉션 로더 파일
+│   │   ├── dict_types.py
 │   │   ├── generate_answer.py      # 답변 생성 파일
 │   │   ├── search.py               # 검색 파일
 │   │   └── embeddings.py           # 임베딩 파일
 │   ├── modules/
+│   │   ├── user_state.py
 │   │   └── handler.py              # 보험약관질의 모듈
 │   ├── options/
 │   │   └── enums.py
@@ -35,7 +38,8 @@ rag/
 │   │   ├── base_prompt.jinja2
 │   │   ├── example_prompt.jinja2
 │   │   └── intent_prompt.jinja2
-│   ├── tests/                      # 테스트 폴더
+│   ├── services/
+│   │   └── insurance_service.py
 │   ├── util/                       # 유틸리티 폴더
 │   │   └── utils.py                # 유틸리티 파일
 │   ├── insu_data/                  # 벡터 DB 저장소
@@ -43,6 +47,9 @@ rag/
 │   │   ├── DBSonBo_YakMu20250123/
 │   │   └── ...
 │   └── main.py
+├── tests/
+│   ├── test_search.py
+│   └── test_collection_loader.py
 ├── .gitignore
 ├── README.md
 └── requirements.txt
@@ -57,7 +64,7 @@ rag/
 ## Installation
 **1. Clone the repository**
 ```bash
-git clone https://github.com/sessac-multi-docu/rag.git
+git clone https://github.com/Insupanda/rag.git
 cd rag
 ```
 **2. Create a virtual environment**
@@ -90,7 +97,13 @@ RAG 모듈을 직접 실행하려면:
 
 ```bash
 cd /rag
-python src/main.py
+python chainlit run src/main.py
+```
+
+## How to Test
+```bash
+cd /rag
+python PYTHONPATH=$(pwd)/src pytest tests/
 ```
 
 ## Code Quality
