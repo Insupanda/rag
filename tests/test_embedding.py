@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 import langchain_upstage
 import numpy as np
 import pytest
@@ -6,18 +8,10 @@ from src.config.settings import settings
 from src.models.embeddings import UpstageEmbedding
 
 
-class DummyUpstageEmbeddings:
-    def __init__(self):
-        self.calls: list[str] = []
-
-    def embed_query(self, text: str) -> list[float]:
-        self.calls.append(text)
-        return [float(i) for i in range(4096)]
-
-
 @pytest.fixture(autouse=True)
 def patch_upstage(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(langchain_upstage, "UpstageEmbeddings", DummyUpstageEmbeddings)
+    mock_class = MagicMock()
+    monkeypatch.setattr(langchain_upstage, "UpstageEmbeddings", mock_class)
 
 
 def test_init_without_any_key_raises() -> None:
