@@ -1,17 +1,8 @@
-from unittest.mock import MagicMock
-
-import langchain_upstage
 import numpy as np
 import pytest
 
 from src.config.settings import settings
 from src.models.embeddings import UpstageEmbedding
-
-
-@pytest.fixture(autouse=True)
-def patch_upstage(monkeypatch: pytest.MonkeyPatch) -> None:
-    mock_class = MagicMock()
-    monkeypatch.setattr(langchain_upstage, "UpstageEmbeddings", mock_class)
 
 
 def test_init_without_any_key_raises() -> None:
