@@ -17,3 +17,10 @@ def mock_pydantic_env(monkeypatch, tmp_path):
     )
 
     monkeypatch.setitem(Settings.model_config, "env_file", str(env_file))
+
+
+def test_settings_loaded():
+    s = Settings()
+    assert s.UPSTAGE_API_KEY == "TEST_KEY_123"
+    assert s.DATABASE_URL.startswith("mysql+pymysql://test_user:test_pass@")
+    assert s.DEBUG is True
