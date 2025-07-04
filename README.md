@@ -18,7 +18,7 @@ rag/
 ├── poc/                            # 초기 레거시 코드
 ├── src/                            # 소스 코드
 │   ├── config/                     # 설정 폴더
-│   │   ├── logger.py               # 로거 파일
+│   │   ├── logger.py               # 로깅 파일
 │   │   └── settings.py
 │   ├── db/                         # DB 폴더
 │   │   ├── schema.py
