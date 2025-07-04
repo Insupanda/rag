@@ -1,8 +1,6 @@
-from importlib import reload
+import importlib
 
 import pytest
-
-import src.config.settings as settings_module
 
 
 @pytest.fixture(autouse=True)
@@ -20,18 +18,14 @@ def mock_env_file(monkeypatch, tmp_path):
         encoding="utf-8",
     )
 
-    # 2) Settings 데이터클래스가 참조하는 env_file 경로를 덮어쓰기
-    #    (pydantic-settings v2 의 model_config.env_file)
-    monkeypatch.setitem(
-        settings_module.Settings.model_config,
-        "env_file",
-        str(test_env),
-    )
+    # 2) ENV_FILE_PATH 를 test.env 로 지정
+    monkeypatch.setenv("ENV_FILE_PATH", str(test_env))
 
-    # 3) 모듈을 다시 로드해서 module-level settings 인스턴스를 갱신
-    reload(settings_module)
+    # 3) fixture 내부에서만 settings 모듈을 import & reload
+    settings_module = importlib.import_module("src.config.settings")
+    importlib.reload(settings_module)
 
-    # 4) reload된 모듈의 settings 인스턴스도 새로 생성하도록 덮어쓰기
+    # 4) module-level settings 인스턴스를 테스트 파일용으로 교체
     monkeypatch.setattr(
         settings_module,
         "settings",
