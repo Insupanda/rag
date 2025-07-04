@@ -28,6 +28,11 @@ def test_get_upstage_embedding_returns_numpy_vector_and_caches() -> None:
     assert vec1.dtype == np.float32
     assert vec1.shape == (1, 4096)
 
+
+def test_caches_embedding_return_same_words() -> None:
+    upembedding = UpstageEmbedding(upstage_api_key=settings.upstage_api_key)
+    vec1 = upembedding.get_upstage_embedding("hello")
+
     assert "hello" in upembedding.cached_embeddings
     assert upembedding.cached_embeddings["hello"] is vec1
 
