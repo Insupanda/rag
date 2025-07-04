@@ -4,11 +4,12 @@ import faiss
 import numpy as np
 from numpy.typing import NDArray
 
-from config.settings import settings
+from config.settings import Settings
 from models.dict_types import DocId, DocIDMetadata, OrganizedCollection, RawCollection
 from models.embeddings import UpstageEmbedding
 
 InsuFileNames = str
+settings = Settings()
 upembedding = UpstageEmbedding(settings.upstage_api_key)
 
 
