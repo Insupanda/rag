@@ -1,26 +1,29 @@
+import os
+from collections.abc import Iterator
+from unittest.mock import patch
+
 import pytest
 
-from src.config.settings import Settings
+from src.config.settings import settings
 
 
-@pytest.fixture(autouse=True)
-def mock_pydantic_env(monkeypatch, tmp_path):
-    env_file = tmp_path / ".env"
-    env_file.write_text(
-        "\n".join(
-            [
-                "UPSTAGE_API_KEY=TEST_KEY_123",
-                "DATABASE_URL=mysql+pymysql://test_user:test_pass@localhost:3306/test_db",
-                "DEBUG=true",
-            ]
-        )
-    )
-
-    monkeypatch.setattr(Settings.model_config, "env_file", str(env_file))
+@pytest.fixture
+def patch_env_vars() -> Iterator[None]:
+    with patch.dict(
+        os.environ,
+        {
+            "UPSTAGE_API_KEY": "test_env_var_1",
+            "OPENAI_API_KEY": "456",
+            "DB_PASSWORD": "1111",
+        },
+    ):
+        yield
 
 
-def test_settings_loaded():
-    s = Settings()
-    assert s.UPSTAGE_API_KEY == "TEST_KEY_123"
-    assert s.DATABASE_URL.startswith("mysql+pymysql://test_user:test_pass@")
-    assert s.DEBUG is True
+def test_read_env(patch_env_vars: None) -> None:
+    env_var_1 = settings.upstage_api_key
+    env_var_2 = settings.openai_api_key
+    env_var_3 = settings.db_password
+    assert env_var_1 == "test_env_var_1"
+    assert env_var_2 == 456
+    assert env_var_3 is True
