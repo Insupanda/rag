@@ -1,31 +1,28 @@
 import importlib
+import os
+from pathlib import Path
 
-import pytest
+import src.config.settings as _settings_mod
 
+# 1) tests/ 폴더에 테스트 전용 .env 파일 생성
+_test_env = Path(__file__).parent / "test.env"
+_test_env.write_text(
+    "\n".join(
+        [
+            "DB_PASSWORD=test_pw_123",
+            "OPENAI_API_KEY=test_api_key_456",
+            "UPSTAGE_API_KEY=test_upstage_key_789",
+        ]
+    ),
+    encoding="utf-8",
+)
 
-@pytest.fixture(autouse=True)
-def mock_env_file(monkeypatch, tmp_path):
-    # 1) tmp_path에 test.env 생성
-    test_env = tmp_path / "test.env"
-    test_env.write_text(
-        "\n".join(
-            [
-                "DB_PASSWORD=test_pw_123",
-                "OPENAI_API_KEY=test_api_key_456",
-                "UPSTAGE_API_KEY=test_upstage_key_789",
-            ]
-        ),
-        encoding="utf-8",
-    )
+# 2) ENV_FILE_PATH 환경변수로 .env 경로 지정
+os.environ["ENV_FILE_PATH"] = str(_test_env)
 
-    # 2) ENV_FILE_PATH 를 test.env 로 지정
-    monkeypatch.setenv("ENV_FILE_PATH", str(test_env))
+# 3) config.settings 모듈이 이 파일을 읽도록 model_config.env_file 덮어쓰기
 
-    # 3) fixture 내부에서만 settings 모듈을 import & reload
-    settings_module = importlib.import_module("src.config.settings")
-    importlib.reload(settings_module)
+_settings_mod.Settings.model_config["env_file"] = str(_test_env)
 
-    # 4) module-level settings 인스턴스를 테스트 파일용으로 교체
-    monkeypatch.setattr(settings_module, "settings", settings_module.Settings())
-
-    return settings_module.settings
+# 4) 한 번 reload 해 줘서 module-level settings 인스턴스도 test.env 값으로 초기화
+importlib.reload(_settings_mod)
