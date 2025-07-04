@@ -26,10 +26,6 @@ def mock_env_file(monkeypatch, tmp_path):
     importlib.reload(settings_module)
 
     # 4) module-level settings 인스턴스를 테스트 파일용으로 교체
-    monkeypatch.setattr(
-        settings_module,
-        "settings",
-        settings_module.Settings(),
-    )
+    monkeypatch.setattr(settings_module, "settings", settings_module.Settings())
 
     return settings_module.settings
