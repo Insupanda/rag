@@ -16,7 +16,7 @@ def mock_pydantic_env(monkeypatch, tmp_path):
         )
     )
 
-    monkeypatch.setitem(Settings.model_config, "env_file", str(env_file))
+    monkeypatch.setattr(Settings.model_config, "env_file", str(env_file))
 
 
 def test_settings_loaded():
