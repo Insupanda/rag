@@ -1,5 +1,3 @@
-import importlib
-
 import pytest
 
 
@@ -20,12 +18,3 @@ def mock_env_file(monkeypatch, tmp_path):
 
     # 2) ENV_FILE_PATH 를 test.env 로 지정
     monkeypatch.setenv("ENV_FILE_PATH", str(test_env))
-
-    # 3) fixture 내부에서만 settings 모듈을 import & reload
-    settings_module = importlib.import_module("config.settings")
-    importlib.reload(settings_module)
-
-    # 4) module-level settings 인스턴스를 테스트 파일용으로 교체
-    monkeypatch.setattr(settings_module, "settings", settings_module.Settings())
-
-    return settings_module.settings
