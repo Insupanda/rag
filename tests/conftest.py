@@ -1,7 +1,7 @@
 import pytest
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def mock_env_file(monkeypatch, tmp_path):
     test_env = tmp_path / "test.env"
     test_env.write_text(
