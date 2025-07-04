@@ -16,6 +16,3 @@ def pytest_configure(config):
     )
 
     os.environ["ENV_FILE_PATH"] = str(test_env)
-    os.environ["DB_PASSWORD"] = "test_pw_123"
-    os.environ["OPENAI_API_KEY"] = "test_api_key_456"
-    os.environ["UPSTAGE_API_KEY"] = "test_upstage_key_789"
