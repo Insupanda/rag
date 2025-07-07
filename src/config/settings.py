@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     upstage_api_key: str
 
     model_config = SettingsConfigDict(
-        env_file=f"{PROJECT_ROOT}/{os.environ['CONF_ENV']}.env", env_file_encoding="utf-8"
+        env_file=f"{PROJECT_ROOT}/{get_env_file_name(os.environ['CONF_ENV'])}.env", env_file_encoding="utf-8"
     )
 
 

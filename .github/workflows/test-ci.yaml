@@ -8,6 +8,8 @@ on:
 jobs:
   run-test:
     runs-on: ubuntu-latest
+    env:
+      CONF_ENV: TEST
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
