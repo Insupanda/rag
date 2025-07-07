@@ -1,4 +1,5 @@
 import logging
+import warnings
 
 import faiss
 import numpy as np
@@ -10,6 +11,7 @@ from models.embeddings import UpstageEmbedding
 
 InsuFileNames = str
 upembedding = UpstageEmbedding(settings.upstage_api_key)
+warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*_multiarray_umath.*")
 
 
 class FaissSearch:
