@@ -23,7 +23,6 @@ class DummyIndex:
         (4096, 3072, (1, 3072)),
     ],
 )
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_pad_embedding_shape(query_dim: int, index_dim: int, expected_shape: tuple[int, int]) -> None:
     search_results = FaissSearch(query="현대해상의 기본플랜 보험료를 알려줘", total_collections=[])
     query_embedding = np.arange(query_dim, dtype=np.float32).reshape(1, -1)
