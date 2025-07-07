@@ -15,41 +15,46 @@
 
 ```
 rag/
-├── poc/                            # 초기 레거시 코드
-├── src/                            # 소스 코드
-│   ├── config/                     # 설정 폴더
-│   │   ├── logger.py               # 로깅 파일
-│   │   └── settings.py
-│   ├── db/                         # DB 폴더
+├── poc/                               # 초기 레거시 코드
+├── src/                               # 소스 코드
+│   ├── config/                        # 설정 폴더
+│   │   ├── logger.py                  # 로깅 파일
+│   │   └── settings.py                # 설정 파일
+│   ├── db/                            # DB 폴더
 │   │   ├── schema.py
 │   │   └── sql_utils.py
 │   ├── models/
-│   │   ├── collection_loader.py    # 콜렉션 로더 파일
-│   │   ├── dict_types.py
-│   │   ├── generate_answer.py      # 답변 생성 파일
-│   │   ├── search.py               # 검색 파일
-│   │   └── embeddings.py           # 임베딩 파일
+│   │   ├── collection_loader.py       # 콜렉션 로더 파일
+│   │   ├── dict_types.py              # 딕셔너리 타입
+│   │   ├── generate_answer.py         # 답변 생성 파일
+│   │   ├── search.py                  # 검색 파일
+│   │   └── embeddings.py              # 임베딩 파일
 │   ├── modules/
-│   │   ├── user_state.py           # 사용자 정보
-│   │   └── handler.py              # 보험약관질의 모듈
+│   │   ├── user_state.py              # 사용자 정보
+│   │   └── handler.py                 # 모듈들 파일
 │   ├── options/
-│   │   └── enums.py
-│   ├── prompts/                    # 프롬프트 폴더
+│   │   ├── insu_name.py               # 보험사명
+│   │   └── enums.py                   # enum 타입
+│   ├── prompts/                       # 프롬프트 폴더
 │   │   ├── base_prompt.jinja2
 │   │   ├── example_prompt.jinja2
 │   │   └── intent_prompt.jinja2
 │   ├── services/
-│   │   └── insurance_service.py
-│   ├── util/                       # 유틸리티 폴더
-│   │   └── utils.py                # 유틸리티 파일
-│   ├── insu_data/                  # 벡터 DB 저장소
+│   │   └── insurance_service.py       # 서비스 코드
+│   ├── util/                          # 유틸리티 폴더
+│   │   └── utils.py                   # 유틸리티 파일
+│   ├── insu_data/                     # 벡터 DB 저장소
 │   │   ├── Samsung_YakMu2404103NapHae20250113/
 │   │   ├── DBSonBo_YakMu20250123/
 │   │   └── ...
 │   └── main.py
-├── tests/
-│   ├── test_search.py              # search.py 테스트
-│   └── test_collection_loader.py   # collection_loader 테스트
+├── tests/                             # 테스트 폴더
+│   ├── models/
+│   │   ├── test_search.py             # 검색 테스트
+│   │   ├── test_generate_answer.py    # 답변 생성 테스트
+│   │   ├── test_collection_loader.py  # 콜렉션 로더 테스트
+│   │   └── test_embeddings.py         # 임베딩 테스트
+│   └── db/
 ├── .gitignore
 ├── README.md
 └── requirements.txt
