@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from typing import Optional
 
@@ -24,9 +23,7 @@ class Settings(BaseSettings):
     openai_api_key: str
     upstage_api_key: str
 
-    model_config = SettingsConfigDict(
-        env_file=f"{PROJECT_ROOT}/{get_env_file_name(os.getenv('CONF_ENV', ''))}.env", env_file_encoding="utf-8"
-    )
+    model_config = SettingsConfigDict(env_file=f"{PROJECT_ROOT}/test.env", env_file_encoding="utf-8")
 
 
 settings = Settings()
