@@ -21,8 +21,8 @@ rag/
 │   │   ├── logger.py                  # 로깅 파일
 │   │   └── settings.py                # 설정 파일
 │   ├── db/                            # DB 폴더
-│   │   ├── schema.py
-│   │   └── sql_utils.py
+│   │   ├── schema.py                  # DB 스키마
+│   │   └── sql_utils.py               # SQL에 관한 유틸코드
 │   ├── models/
 │   │   ├── collection_loader.py       # 콜렉션 로더 파일
 │   │   ├── dict_types.py              # 딕셔너리 타입
