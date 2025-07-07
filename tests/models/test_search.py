@@ -4,6 +4,8 @@ from numpy.typing import NDArray
 
 from models.search import FaissSearch
 
+pytestmark = pytest.mark.filterwarnings("ignore::DeprecationWarning")
+
 
 class DummyIndex:
     def __init__(self, d: int, distances: NDArray[np.float32], indices: NDArray[np.int64]):
