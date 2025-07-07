@@ -1,8 +1,16 @@
+import os
 from pathlib import Path
+from typing import Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
+
+
+def get_env_file_name(env: Optional[str]) -> str:
+    if not env or env.upper() not in ["DEV", "STG", "PROD", "TEST"]:
+        return ""
+    return f".{env.lower()}"
 
 
 class Settings(BaseSettings):
@@ -16,7 +24,9 @@ class Settings(BaseSettings):
     openai_api_key: str
     upstage_api_key: str
 
-    model_config = SettingsConfigDict(env_file=f"{PROJECT_ROOT}/.env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(
+        env_file=f"{PROJECT_ROOT}/{get_env_file_name(os.getenv('CONF_ENV', ''))}.env", env_file_encoding="utf-8"
+    )
 
 
 settings = Settings()
