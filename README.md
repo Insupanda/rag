@@ -108,7 +108,7 @@ chainlit run src/main.py -w
 ## How to Test
 ```bash
 cd /rag
-python PYTHONPATH=$(pwd)/src pytest tests/
+PYTHONPATH=$(pwd)/src pytest tests/
 ```
 
 ## Code Quality
