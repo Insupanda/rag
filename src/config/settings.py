@@ -4,11 +4,13 @@ from typing import Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from options.enums import ServiceEnv
+
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 
 
 def get_env_file_name(env: Optional[str]) -> str:
-    if not env or env.upper() not in ["DEV", "STG", "PROD", "TEST"]:
+    if not env or env.upper() not in [ServiceEnv.DEV, ServiceEnv.STG, ServiceEnv.PROD, ServiceEnv.TEST]:
         return ""
     return f".{env.lower()}"
 
