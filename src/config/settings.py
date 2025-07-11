@@ -10,7 +10,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 
 
 def get_env_file_name(env: Optional[str]) -> str:
-    if not env or env.upper() not in [ServiceEnv.DEV, ServiceEnv.STG, ServiceEnv.PROD, ServiceEnv.TEST]:
+    if not env or env.upper() not in ServiceEnv._value2member_map_:
         return ""
     return f".{env.lower()}"
 
