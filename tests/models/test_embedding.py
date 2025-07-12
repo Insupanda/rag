@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from src.config.settings import settings
-from src.models.embeddings import UpstageEmbedding
+from config.settings import settings
+from models.embeddings import UpstageEmbedding
 
 
 def test_init_without_any_key_raises() -> None:
